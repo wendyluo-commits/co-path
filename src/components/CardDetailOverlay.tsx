@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
 import { Face } from './useCardPreview';
 
 interface CardDetailOverlayProps {
@@ -36,15 +35,27 @@ export function CardDetailOverlay({ face, onClose }: CardDetailOverlayProps) {
           {/* 白底容器（移动端可滚动） */}
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-[480px] max-h-[92dvh] overflow-y-auto">
             {/* 顶栏 */}
-            <div className="sticky top-0 bg-white flex items-center justify-between p-6 border-b border-gray-100 z-10">
+            <div className="sticky top-0 bg-white flex items-center justify-end p-6 border-b border-gray-100 z-10">
               <button
                 onClick={onClose}
-                className="p-2 -ml-2 text-gray-700 hover:text-gray-900 rounded-lg transition-colors"
-                aria-label="返回"
+                className="p-2 hover:opacity-70 transition-opacity"
+                aria-label="关闭"
               >
-                <ArrowLeft className="h-6 w-6" />
+                <img 
+                  src="/close.png" 
+                  alt="Close" 
+                  className="h-6 w-6"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    // 如果图片不存在，使用SVG作为fallback
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<svg class="h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                    }
+                  }}
+                />
               </button>
-              <div className="w-10" />
             </div>
 
             {/* 内容区域（无 3D 跟手） */}
