@@ -1,0 +1,2734 @@
+{
+  "愚者": {
+    "name": "The Fool",
+    "chinese_name": "愚者",
+    "suit": "Major",
+    "number": 0,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "新开始",
+        "冒险",
+        "天真",
+        "潜能"
+      ],
+      "love": "新恋情的开始，保持开放心态",
+      "career": "新机会出现，勇于尝试",
+      "advice": [
+        "拥抱新的开始",
+        "保持好奇心",
+        "相信直觉"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "冲动",
+        "鲁莽",
+        "缺乏方向"
+      ],
+      "love": "感情中过于冲动或犹豫不决",
+      "career": "缺乏明确目标，需要谨慎计划",
+      "advice": [
+        "三思而后行",
+        "制定明确计划",
+        "寻求指导"
+      ]
+    }
+  },
+  "魔术师": {
+    "name": "The Magician",
+    "chinese_name": "魔术师",
+    "suit": "Major",
+    "number": 1,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "意志力",
+        "技能",
+        "集中",
+        "创造"
+      ],
+      "love": "主动追求，展现魅力",
+      "career": "发挥才能，把握机会",
+      "advice": [
+        "相信自己的能力",
+        "专注目标",
+        "运用所有资源"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "缺乏信心",
+        "滥用权力",
+        "欺骗"
+      ],
+      "love": "感情中缺乏真诚或自信",
+      "career": "技能不足或方向错误",
+      "advice": [
+        "提升自信",
+        "诚实面对",
+        "重新评估目标"
+      ]
+    }
+  },
+  "女祭司": {
+    "name": "The High Priestess",
+    "chinese_name": "女祭司",
+    "suit": "Major",
+    "number": 2,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "皇后": {
+    "name": "The Empress",
+    "chinese_name": "皇后",
+    "suit": "Major",
+    "number": 3,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "皇帝": {
+    "name": "The Emperor",
+    "chinese_name": "皇帝",
+    "suit": "Major",
+    "number": 4,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "教皇": {
+    "name": "The Hierophant",
+    "chinese_name": "教皇",
+    "suit": "Major",
+    "number": 5,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "恋人": {
+    "name": "The Lovers",
+    "chinese_name": "恋人",
+    "suit": "Major",
+    "number": 6,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "战车": {
+    "name": "The Chariot",
+    "chinese_name": "战车",
+    "suit": "Major",
+    "number": 7,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "力量": {
+    "name": "Strength",
+    "chinese_name": "力量",
+    "suit": "Major",
+    "number": 8,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "隐者": {
+    "name": "The Hermit",
+    "chinese_name": "隐者",
+    "suit": "Major",
+    "number": 9,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "命运之轮": {
+    "name": "Wheel of Fortune",
+    "chinese_name": "命运之轮",
+    "suit": "Major",
+    "number": 10,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "正义": {
+    "name": "Justice",
+    "chinese_name": "正义",
+    "suit": "Major",
+    "number": 11,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "倒吊人": {
+    "name": "The Hanged Man",
+    "chinese_name": "倒吊人",
+    "suit": "Major",
+    "number": 12,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "死神": {
+    "name": "Death",
+    "chinese_name": "死神",
+    "suit": "Major",
+    "number": 13,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "节制": {
+    "name": "Temperance",
+    "chinese_name": "节制",
+    "suit": "Major",
+    "number": 14,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "恶魔": {
+    "name": "The Devil",
+    "chinese_name": "恶魔",
+    "suit": "Major",
+    "number": 15,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "高塔": {
+    "name": "The Tower",
+    "chinese_name": "高塔",
+    "suit": "Major",
+    "number": 16,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星星": {
+    "name": "The Star",
+    "chinese_name": "星星",
+    "suit": "Major",
+    "number": 17,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "月亮": {
+    "name": "The Moon",
+    "chinese_name": "月亮",
+    "suit": "Major",
+    "number": 18,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "太阳": {
+    "name": "The Sun",
+    "chinese_name": "太阳",
+    "suit": "Major",
+    "number": 19,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "审判": {
+    "name": "Judgement",
+    "chinese_name": "审判",
+    "suit": "Major",
+    "number": 20,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "世界": {
+    "name": "The World",
+    "chinese_name": "世界",
+    "suit": "Major",
+    "number": 21,
+    "arcana": "Major Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯王牌": {
+    "name": "Ace of Cups",
+    "chinese_name": "圣杯王牌",
+    "suit": "圣杯",
+    "number": 1,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯二": {
+    "name": "Two of Cups",
+    "chinese_name": "圣杯二",
+    "suit": "圣杯",
+    "number": 2,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯三": {
+    "name": "Three of Cups",
+    "chinese_name": "圣杯三",
+    "suit": "圣杯",
+    "number": 3,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯四": {
+    "name": "Four of Cups",
+    "chinese_name": "圣杯四",
+    "suit": "圣杯",
+    "number": 4,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯五": {
+    "name": "Five of Cups",
+    "chinese_name": "圣杯五",
+    "suit": "圣杯",
+    "number": 5,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯六": {
+    "name": "Six of Cups",
+    "chinese_name": "圣杯六",
+    "suit": "圣杯",
+    "number": 6,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯七": {
+    "name": "Seven of Cups",
+    "chinese_name": "圣杯七",
+    "suit": "圣杯",
+    "number": 7,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯八": {
+    "name": "Eight of Cups",
+    "chinese_name": "圣杯八",
+    "suit": "圣杯",
+    "number": 8,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯九": {
+    "name": "Nine of Cups",
+    "chinese_name": "圣杯九",
+    "suit": "圣杯",
+    "number": 9,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯十": {
+    "name": "Ten of Cups",
+    "chinese_name": "圣杯十",
+    "suit": "圣杯",
+    "number": 10,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯侍从": {
+    "name": "Page of Cups",
+    "chinese_name": "圣杯侍从",
+    "suit": "圣杯",
+    "number": 11,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯骑士": {
+    "name": "Knight of Cups",
+    "chinese_name": "圣杯骑士",
+    "suit": "圣杯",
+    "number": 12,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯王后": {
+    "name": "Queen of Cups",
+    "chinese_name": "圣杯王后",
+    "suit": "圣杯",
+    "number": 13,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "圣杯国王": {
+    "name": "King of Cups",
+    "chinese_name": "圣杯国王",
+    "suit": "圣杯",
+    "number": 14,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑王牌": {
+    "name": "Ace of Swords",
+    "chinese_name": "宝剑王牌",
+    "suit": "宝剑",
+    "number": 1,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑二": {
+    "name": "Two of Swords",
+    "chinese_name": "宝剑二",
+    "suit": "宝剑",
+    "number": 2,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑三": {
+    "name": "Three of Swords",
+    "chinese_name": "宝剑三",
+    "suit": "宝剑",
+    "number": 3,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑四": {
+    "name": "Four of Swords",
+    "chinese_name": "宝剑四",
+    "suit": "宝剑",
+    "number": 4,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑五": {
+    "name": "Five of Swords",
+    "chinese_name": "宝剑五",
+    "suit": "宝剑",
+    "number": 5,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑六": {
+    "name": "Six of Swords",
+    "chinese_name": "宝剑六",
+    "suit": "宝剑",
+    "number": 6,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑七": {
+    "name": "Seven of Swords",
+    "chinese_name": "宝剑七",
+    "suit": "宝剑",
+    "number": 7,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑八": {
+    "name": "Eight of Swords",
+    "chinese_name": "宝剑八",
+    "suit": "宝剑",
+    "number": 8,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑九": {
+    "name": "Nine of Swords",
+    "chinese_name": "宝剑九",
+    "suit": "宝剑",
+    "number": 9,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑十": {
+    "name": "Ten of Swords",
+    "chinese_name": "宝剑十",
+    "suit": "宝剑",
+    "number": 10,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑侍从": {
+    "name": "Page of Swords",
+    "chinese_name": "宝剑侍从",
+    "suit": "宝剑",
+    "number": 11,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑骑士": {
+    "name": "Knight of Swords",
+    "chinese_name": "宝剑骑士",
+    "suit": "宝剑",
+    "number": 12,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑王后": {
+    "name": "Queen of Swords",
+    "chinese_name": "宝剑王后",
+    "suit": "宝剑",
+    "number": 13,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "宝剑国王": {
+    "name": "King of Swords",
+    "chinese_name": "宝剑国王",
+    "suit": "宝剑",
+    "number": 14,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖王牌": {
+    "name": "Ace of Wands",
+    "chinese_name": "权杖王牌",
+    "suit": "权杖",
+    "number": 1,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖二": {
+    "name": "Two of Wands",
+    "chinese_name": "权杖二",
+    "suit": "权杖",
+    "number": 2,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖三": {
+    "name": "Three of Wands",
+    "chinese_name": "权杖三",
+    "suit": "权杖",
+    "number": 3,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖四": {
+    "name": "Four of Wands",
+    "chinese_name": "权杖四",
+    "suit": "权杖",
+    "number": 4,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖五": {
+    "name": "Five of Wands",
+    "chinese_name": "权杖五",
+    "suit": "权杖",
+    "number": 5,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖六": {
+    "name": "Six of Wands",
+    "chinese_name": "权杖六",
+    "suit": "权杖",
+    "number": 6,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖七": {
+    "name": "Seven of Wands",
+    "chinese_name": "权杖七",
+    "suit": "权杖",
+    "number": 7,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖八": {
+    "name": "Eight of Wands",
+    "chinese_name": "权杖八",
+    "suit": "权杖",
+    "number": 8,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖九": {
+    "name": "Nine of Wands",
+    "chinese_name": "权杖九",
+    "suit": "权杖",
+    "number": 9,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖十": {
+    "name": "Ten of Wands",
+    "chinese_name": "权杖十",
+    "suit": "权杖",
+    "number": 10,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖侍从": {
+    "name": "Page of Wands",
+    "chinese_name": "权杖侍从",
+    "suit": "权杖",
+    "number": 11,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖骑士": {
+    "name": "Knight of Wands",
+    "chinese_name": "权杖骑士",
+    "suit": "权杖",
+    "number": 12,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖王后": {
+    "name": "Queen of Wands",
+    "chinese_name": "权杖王后",
+    "suit": "权杖",
+    "number": 13,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "权杖国王": {
+    "name": "King of Wands",
+    "chinese_name": "权杖国王",
+    "suit": "权杖",
+    "number": 14,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币王牌": {
+    "name": "Ace of Pentacles",
+    "chinese_name": "星币王牌",
+    "suit": "星币",
+    "number": 1,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币二": {
+    "name": "Two of Pentacles",
+    "chinese_name": "星币二",
+    "suit": "星币",
+    "number": 2,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币三": {
+    "name": "Three of Pentacles",
+    "chinese_name": "星币三",
+    "suit": "星币",
+    "number": 3,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币四": {
+    "name": "Four of Pentacles",
+    "chinese_name": "星币四",
+    "suit": "星币",
+    "number": 4,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币五": {
+    "name": "Five of Pentacles",
+    "chinese_name": "星币五",
+    "suit": "星币",
+    "number": 5,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币六": {
+    "name": "Six of Pentacles",
+    "chinese_name": "星币六",
+    "suit": "星币",
+    "number": 6,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币七": {
+    "name": "Seven of Pentacles",
+    "chinese_name": "星币七",
+    "suit": "星币",
+    "number": 7,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币八": {
+    "name": "Eight of Pentacles",
+    "chinese_name": "星币八",
+    "suit": "星币",
+    "number": 8,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币九": {
+    "name": "Nine of Pentacles",
+    "chinese_name": "星币九",
+    "suit": "星币",
+    "number": 9,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币十": {
+    "name": "Ten of Pentacles",
+    "chinese_name": "星币十",
+    "suit": "星币",
+    "number": 10,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币侍从": {
+    "name": "Page of Pentacles",
+    "chinese_name": "星币侍从",
+    "suit": "星币",
+    "number": 11,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币骑士": {
+    "name": "Knight of Pentacles",
+    "chinese_name": "星币骑士",
+    "suit": "星币",
+    "number": 12,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币王后": {
+    "name": "Queen of Pentacles",
+    "chinese_name": "星币王后",
+    "suit": "星币",
+    "number": 13,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  },
+  "星币国王": {
+    "name": "King of Pentacles",
+    "chinese_name": "星币国王",
+    "suit": "星币",
+    "number": 14,
+    "arcana": "Minor Arcana",
+    "upright": {
+      "keywords": [
+        "正面能量",
+        "积极发展",
+        "和谐"
+      ],
+      "love": "感情方面呈现正面发展趋势",
+      "career": "事业上有积极的进展机会",
+      "advice": [
+        "保持积极态度",
+        "把握机会",
+        "相信自己"
+      ]
+    },
+    "reversed": {
+      "keywords": [
+        "阻碍",
+        "挑战",
+        "需要调整"
+      ],
+      "love": "感情中可能遇到一些挑战",
+      "career": "工作上需要重新调整方向",
+      "advice": [
+        "耐心等待",
+        "调整策略",
+        "寻求帮助"
+      ]
+    }
+  }
+}
