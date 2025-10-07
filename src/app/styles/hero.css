@@ -1,0 +1,31 @@
+
+.hero {
+  /* Legacy fallback first */
+  background-image: url("/images/backgrounds/bg-new.PNG");
+
+  /* Modern responsive background */
+  background-image: image-set(
+    url("/images/backgrounds/bg-new.PNG") type("image/png") 1x,
+    url("/images/backgrounds/bg-new.PNG") type("image/png") 2x,
+    url("/bg4.png") type("image/png") 1x,
+    url("/bg.png") type("image/png") 1x,
+    url("/bg.avif") type("image/avif") 1x,
+    url("/bg@2x.avif") type("image/avif") 2x,
+    url("/bg.webp") type("image/webp") 1x,
+    url("/bg@2x.webp") type("image/webp") 2x,
+    url("/bg.jpg") type("image/jpeg") 1x
+  );
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; /* fill container */
+  background-color: #f7f8fa; /* avoid flash */
+  min-height: 100vh;
+}
+
+/* Optional: zero-crop variant */
+.hero--contain {
+  background-size: contain;
+}
+
+
