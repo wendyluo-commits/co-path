@@ -428,7 +428,7 @@ export default function HistoryPage() {
 
                   {/* 右侧：红色框 - 塔罗牌预览 */}
                   <div className="flex -space-x-2">
-                    {item.cards.slice(0, 3).map((card, index) => (
+                    {item.cards.map((card, index) => (
                       <div
                         key={index}
                         className="w-12 h-18 rounded-lg border-2 border-white shadow-sm bg-white overflow-hidden"
@@ -448,13 +448,6 @@ export default function HistoryPage() {
                         />
                       </div>
                     ))}
-                    {item.cards.length > 3 && (
-                      <div className="w-12 h-18 rounded-lg border-2 border-white shadow-sm bg-gray-100 flex items-center justify-center">
-                        <span className="text-xs text-gray-600 font-medium">
-                          +{item.cards.length - 3}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

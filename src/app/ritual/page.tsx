@@ -427,6 +427,20 @@ function RitualPageContent() {
   const D3 = 500;
   const D4 = 600;
 
+  // 自动开始洗牌 - 页面加载后2秒自动开始
+  useEffect(() => {
+    if (!isShuffled && !isShuffling) {
+      // 2秒后自动开始洗牌
+      const timer = setTimeout(() => {
+        shuffleCards();
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, []); // 只在组件加载时执行一次
+
   const shuffleCards = () => {
     const selectedCount = selectedSlots.filter(Boolean).length;
     if (isShuffling || selectedCount > 0) return;
