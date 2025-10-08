@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 构建卡牌上下文
+    // 构建卡牌上下文 - 修复类型问题
     const cardContext = drawnCards.map((card: any) => {
       const cardData = lookupCard(card.name);
       if (!cardData) {
@@ -150,8 +150,10 @@ export async function POST(request: NextRequest) {
       }
       
       const orientation = card.orientation === 'upright' ? '正位' : '逆位';
-      const keywords = cardData[card.orientation].keywords.join('、');
-      const advice = cardData[card.orientation].advice.join('；');
+      // 修复类型问题：明确指定orientation类型
+      const cardOrientation = card.orientation as 'upright' | 'reversed';
+      const keywords = cardData[cardOrientation].keywords.join('、');
+      const advice = cardData[cardOrientation].advice.join('；');
       
       return `${card.name} (${orientation}) - 位置: ${card.position}\n关键词: ${keywords}\n建议: ${advice}`;
     }).join('\n\n');
