@@ -25,29 +25,10 @@ export async function POST(request: NextRequest) {
       cardsCount: drawnCards.length 
     });
 
-    // 构建卡牌上下文
-    const cardContext = drawnCards.map((card: any) => {
-      const cardData = lookupCard(card.name);
-      if (!cardData) {
-        console.warn('找不到卡牌数据:', card.name);
-        return `${card.name} (${card.orientation}) - 位置: ${card.position}`;
-      }
-      
-      const orientation = card.orientation === 'upright' ? '正位' : '逆位';
-      const cardOrientation = card.orientation as 'upright' | 'reversed';
-      const keywords = cardData[cardOrientation].keywords.join('、');
-      const advice = cardData[cardOrientation].advice.join('；');
-      
-      return `${card.name} (${orientation}) - 位置: ${card.position}\n关键词: ${keywords}\n建议: ${advice}`;
-    }).join('\n\n');
-
-    console.log('卡牌上下文构建完成，长度:', cardContext.length);
-
     // 生成解读
     try {
       console.log('开始调用AI解读...');
-      const agentResponse = await generateTarotReadingWithAgent(question, cardContext);
-      console.log('AI解读响应:', agentResponse);
+      const agentResponse = await generateTarotReadingWithAgent(question, '');
       
       if (agentResponse.success && agentResponse.data) {
         console.log('AI解读成功，返回数据');
@@ -59,7 +40,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('AI解读生成失败，使用降级响应:', error);
       
-      // 修复：确保降级响应格式正确
+      // 修复：确保降级响应格式正确，不依赖card.data
       const isFiveCard = spread === 'five-card';
       console.log('牌阵类型:', spread, '是否五张牌:', isFiveCard);
       
@@ -83,7 +64,7 @@ export async function POST(request: NextRequest) {
             number: 0,
             position: card.position,
             orientation: card.orientation,
-            keywords: card.data[card.orientation].keywords,
+            keywords: card.keywords || ["直觉", "选择", "变化"], // 使用传入的keywords
             interpretation: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置，针对您的问题"${question}"，这张牌为您提供了深刻的洞察。`,
             advice: `结合您当前的情况，建议您保持开放的心态，相信自己的判断力。`
           })),
@@ -111,7 +92,7 @@ export async function POST(request: NextRequest) {
             number: 0,
             position: card.position,
             orientation: card.orientation,
-            keywords: card.data[card.orientation].keywords,
+            keywords: card.keywords || ["直觉", "选择", "变化"], // 使用传入的keywords
             interpretation: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置，针对您的问题"${question}"，这张牌为您提供了深刻的洞察。`,
             advice: `结合您当前的情况，建议您保持开放的心态，相信自己的判断力。`
           })),
