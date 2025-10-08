@@ -3,23 +3,33 @@ import { generateTarotReadingWithAgent } from '@/lib/openai';
 import { lookupCard } from '@/lib/tarot';
 
 export async function POST(request: NextRequest) {
+  console.log('=== API开始处理请求 ===');
+  
   try {
     const body = await request.json();
+    console.log('请求体:', JSON.stringify(body, null, 2));
+    
     const { question, spread, cards: drawnCards } = body;
 
     if (!question || !spread || !drawnCards) {
+      console.error('缺少必需字段:', { question: !!question, spread: !!spread, cards: !!drawnCards });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    console.log('API请求:', { question, spread, cardsCount: drawnCards.length });
+    console.log('API请求验证通过:', { 
+      question: question.substring(0, 50) + '...', 
+      spread, 
+      cardsCount: drawnCards.length 
+    });
 
     // 构建卡牌上下文
     const cardContext = drawnCards.map((card: any) => {
       const cardData = lookupCard(card.name);
       if (!cardData) {
+        console.warn('找不到卡牌数据:', card.name);
         return `${card.name} (${card.orientation}) - 位置: ${card.position}`;
       }
       
@@ -31,14 +41,19 @@ export async function POST(request: NextRequest) {
       return `${card.name} (${orientation}) - 位置: ${card.position}\n关键词: ${keywords}\n建议: ${advice}`;
     }).join('\n\n');
 
+    console.log('卡牌上下文构建完成，长度:', cardContext.length);
+
     // 生成解读
     try {
+      console.log('开始调用AI解读...');
       const agentResponse = await generateTarotReadingWithAgent(question, cardContext);
+      console.log('AI解读响应:', agentResponse);
       
       if (agentResponse.success && agentResponse.data) {
-        console.log('AI解读成功:', agentResponse.data);
+        console.log('AI解读成功，返回数据');
         return NextResponse.json(agentResponse.data);
       } else {
+        console.error('AI解读失败:', agentResponse.error);
         throw new Error(agentResponse.error || 'Agent failed to generate reading');
       }
     } catch (error) {
@@ -46,9 +61,11 @@ export async function POST(request: NextRequest) {
       
       // 修复：确保降级响应格式正确
       const isFiveCard = spread === 'five-card';
+      console.log('牌阵类型:', spread, '是否五张牌:', isFiveCard);
       
       if (isFiveCard) {
         // 五张牌格式 - 需要 readingResults
+        console.log('生成五张牌格式降级响应...');
         const readingResults = drawnCards.map((card: any, index: number) => ({
           heading: `${card.position} - ${card.name}`,
           body: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置，针对您的问题"${question}"，这张牌为您提供了深刻的洞察。结合您当前的情况，这张牌建议您保持开放的心态，相信自己的判断力。`,
@@ -80,10 +97,11 @@ export async function POST(request: NextRequest) {
           safety_note: "塔罗牌解读仅供参考，最终决定权在您手中。请结合实际情况做出明智的选择。"
         };
 
-        console.log('降级响应(五张牌):', fallbackReading);
+        console.log('五张牌降级响应生成完成');
         return NextResponse.json(fallbackReading);
       } else {
         // 单张牌或三张牌格式 - 不需要 readingResults
+        console.log('生成单张/三张牌格式降级响应...');
         const fallbackReading = {
           spread,
           question,
@@ -106,14 +124,20 @@ export async function POST(request: NextRequest) {
           safety_note: "塔罗牌解读仅供参考，最终决定权在您手中。请结合实际情况做出明智的选择。"
         };
 
-        console.log('降级响应(单张/三张牌):', fallbackReading);
+        console.log('单张/三张牌降级响应生成完成');
         return NextResponse.json(fallbackReading);
       }
     }
   } catch (error) {
-    console.error('解读生成失败:', error);
+    console.error('=== API处理失败 ===');
+    console.error('错误详情:', error);
+    console.error('错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
+    
     return NextResponse.json(
-      { error: 'Failed to generate reading' },
+      { 
+        error: 'Failed to generate reading',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
