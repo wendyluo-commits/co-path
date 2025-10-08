@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import EmblaCarousel from '@/components/EmblaCarousel';
+import BottomNav from '@/components/BottomNav';
 
 const spreads = [
   { 
@@ -59,10 +60,10 @@ export default function DailyTarotEntry() {
   return (
     <div className="h-dvh relative text-gray-900 overflow-hidden hero">
       {/* 主容器（移动端优先） */}
-      <div className="relative w-full max-w-[1440px] mx-auto min-h-dvh flex flex-col px-4 md:px-6">
+      <div className="relative w-full max-w-[1440px] mx-auto min-h-dvh flex flex-col px-4 md:px-6 pb-24">
         
         {/* Header: 顶部信息区 */}
-        <header className="pt-safe pb-5 md:pb-8" style={{ paddingTop: '62px', paddingLeft: '12px', paddingRight: '8px' }}>
+        <header className="pt-safe pb-24 md:pb-28" style={{ paddingTop: '62px', paddingLeft: '12px', paddingRight: '8px' }}>
           <div className="flex items-center justify-between">
             {/* Co-Path标题和日期 */}
             <div className="block">
@@ -120,7 +121,7 @@ export default function DailyTarotEntry() {
 
 
         {/* SpreadGrid: 中部牌阵选择区（居中轮播3张卡） */}
-        <section className="py-4 md:py-6 h-[46vh] md:h-[52vh] lg:h-[560px] mt-55">
+        <section className="py-4 md:py-6 h-[46vh] md:h-[52vh] lg:h-[560px]" style={{ marginTop: '20px' }}>
           <div className="-mx-4 md:-mx-6">
             <EmblaCarousel 
               slides={spreads}
@@ -133,6 +134,9 @@ export default function DailyTarotEntry() {
         </section>
 
       </div>
+
+      {/* 底部导航栏 */}
+      <BottomNav />
     </div>
   );
 }

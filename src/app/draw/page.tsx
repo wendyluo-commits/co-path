@@ -55,6 +55,7 @@ function DrawPageContent() {
   const [, setDrawResult] = useState<DrawResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [countdown, setCountdown] = useState(2);
 
   const maxCards = spread === 'single' ? 1 : 3;
   const totalCards = 78; // 完整塔罗牌组
@@ -101,6 +102,30 @@ function DrawPageContent() {
   const handleShuffleComplete = () => {
     setPhase('selecting');
   };
+
+  // 自动开始洗牌 - 进入页面后2秒自动开始
+  useEffect(() => {
+    console.log('Auto shuffle effect triggered:', { phase, session: !!session });
+    if (phase === 'ready' && session) {
+      console.log('Starting 2-second countdown...');
+      
+      // 立即显示倒计时
+      setCountdown(2);
+      
+      // 1秒后显示1
+      setTimeout(() => {
+        console.log('Countdown: 1');
+        setCountdown(1);
+      }, 1000);
+      
+      // 2秒后自动开始洗牌
+      setTimeout(() => {
+        console.log('Auto shuffle completed!');
+        setCountdown(0);
+        handleShuffleComplete();
+      }, 2000);
+    }
+  }, [phase, session]);
 
   // 处理选牌变化
   const handleSelectionChange = useCallback((positions: number[]) => {
@@ -212,6 +237,10 @@ function DrawPageContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
+        {/* 调试标识 */}
+        <div className="fixed top-20 right-4 bg-red-500 text-white px-2 py-1 rounded text-xs z-50">
+          🔥 自动洗牌版本
+        </div>
         {/* Header */}
         <div className="mb-8">
           <Link 
@@ -267,10 +296,11 @@ function DrawPageContent() {
             <div>
               <ShuffleAnimation 
                 onShuffleComplete={handleShuffleComplete}
-                disabled={false}
+                disabled={true}
               />
-                              <div className="text-center mt-6 text-sm text-gray-600">
-                <p>请先点击&ldquo;开始洗牌&rdquo;来随机排列牌组</p>
+              <div className="text-center mt-6 text-sm text-gray-600">
+                <p>🚀 系统将在 {countdown} 秒后自动开始洗牌...</p>
+                <p className="text-xs text-blue-500 mt-2">调试信息：phase={phase}, session={session ? '已创建' : '未创建'}</p>
               </div>
             </div>
           )}
