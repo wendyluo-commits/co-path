@@ -4,7 +4,7 @@ import { NEW_SYSTEM_PROMPT } from '@/prompts/reading';
 
 // 初始化 OpenAI 客户端
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
+  apiKey: process.env.OPENAI_API_KEY ,
 });
 
 // 模型配置
