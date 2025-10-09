@@ -40,6 +40,7 @@ function StartPageContent() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
     setLanguage(savedLanguage);
+    setSuggestions(questions[savedLanguage].slice(0, 7));
     
     const handleLanguageChange = (event: CustomEvent) => {
       const newLanguage = event.detail.language;
@@ -57,7 +58,7 @@ function StartPageContent() {
       : '0 0 0 1px rgba(59, 130, 246, 0.3), 0 0 15px rgba(59, 130, 246, 0.2), 0 0 30px rgba(59, 130, 246, 0.15)'
   };
 
-  const [suggestions, setSuggestions] = useState<string[]>(questions[language].slice(0, 7));
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const refreshSuggestions = () => {
     // Simple shuffle and take 7
