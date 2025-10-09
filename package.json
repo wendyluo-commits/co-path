@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack --hostname 0.0.0.0",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:qa": "node qa-simple-test.js",
+    "test:qa:full": "node qa-test-english-reading.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
