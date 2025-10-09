@@ -77,7 +77,7 @@ function StartPageContent() {
         question: question.trim(),
         spread: presetSpread,
         tone: 'gentle' as const,
-        lang: 'zh' as const
+        lang: language as 'zh' | 'en'
       };
 
       const validationResult = ReadingRequestSchema.safeParse({

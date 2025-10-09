@@ -121,12 +121,51 @@ export async function generateTarotReadingStream(
 export async function generateTarotReadingWithAgent(
   question: string,
   cardContext: string,
+  lang: 'zh' | 'en' = 'zh',
   maxRetries: number = 2
 ) {
   let lastError: Error | null = null;
   
   // 基于您的Custom GPT Agent"温暖严谨塔罗解读师"的完整配置
-  const systemPrompt = `# 温暖严谨塔罗解读师
+  const systemPrompt = lang === 'en' 
+    ? `# Warm and Rigorous Tarot Reader
+
+You are a professional tarot reader with the following characteristics:
+
+## Core Identity
+- A warm and rigorous tarot reader
+- Specialized in outputting strict JSON format for frontend rendering
+- Combining traditional tarot wisdom with modern psychological insights
+
+## Reading Style
+- **Warm Care**: Communicate with users in an understanding, supportive, and encouraging tone
+- **Rigorous Professional**: Based on traditional meanings and symbolic systems of tarot cards
+- **Practical Orientation**: Provide specific and actionable advice and action steps
+- **Positive Attitude**: Emphasize users' autonomy and ability to change
+- **Avoid Fatalism**: No absolute predictions, emphasize possibilities and choices
+
+## Reading Principles
+1. Each card is explained in combination with its positional meaning
+2. Transform abstract card meanings into specific life guidance
+3. Provide 3-5 actionable recommendations
+4. Identify potential risks and provide coping strategies
+5. Maintain neutral, respectful, and specific expression
+
+## Output Requirements
+- Must strictly follow JSON Schema format
+- Each card explanation at least 50 words
+- Each card advice at least 40 words
+- Overall summary at least 80 words
+- Include safety notes and disclaimers
+
+## Language Style
+- Use warm, understanding tone
+- Avoid overly mysterious or frightening expressions
+- Address users as "you" to maintain respect
+- Clear and concise language, easy to understand
+
+Please output results strictly according to JSON Schema format.`
+    : `# 温暖严谨塔罗解读师
 
 你是一位专业的塔罗解读师，具有以下特质：
 
@@ -164,7 +203,17 @@ export async function generateTarotReadingWithAgent(
 
 请严格按照JSON Schema格式输出结果。`;
 
-  const userPrompt = `请根据以下信息进行塔罗解读：
+  const userPrompt = lang === 'en'
+    ? `Please provide a tarot reading based on the following information:
+
+## User Question
+${question}
+
+## Cards Drawn
+${cardContext}
+
+Please return the reading results in JSON format, including detailed explanations for each card, overall interpretation, and action recommendations.`
+    : `请根据以下信息进行塔罗解读：
 
 ## 用户问题
 ${question}
@@ -242,11 +291,22 @@ ${cardContext}
 export async function generateNewTarotReading(
   question: string,
   cardContext: string,
+  lang: 'zh' | 'en' = 'zh',
   maxRetries: number = 2
 ) {
   let lastError: Error | null = null;
   
-  const userPrompt = `请根据以下信息进行塔罗解读：
+  const userPrompt = lang === 'en'
+    ? `Please provide a tarot reading based on the following information:
+
+## User Question
+${question}
+
+## Cards Drawn
+${cardContext}
+
+Please return the reading results in the new JSON format, including cards, readingResults, keyMessages and other fields.`
+    : `请根据以下信息进行塔罗解读：
 
 ## 用户问题
 ${question}

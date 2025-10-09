@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { question, spread, seed, tone, cards: preselectedCards } = validationResult.data;
+    const { question, spread, seed, tone, lang, cards: preselectedCards } = validationResult.data;
     
     // 检查是否使用新格式（可以通过查询参数或请求体控制）
     const useNewFormat = body.useNewFormat === true;
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
     
     // 根据参数选择使用新格式还是旧格式
     const result = useNewFormat 
-      ? await generateNewTarotReading(question, cardContext)
-      : await generateTarotReadingWithAgent(question, cardContext);
+      ? await generateNewTarotReading(question, cardContext, lang)
+      : await generateTarotReadingWithAgent(question, cardContext, lang);
     
     if (!result.success) {
       console.error('OpenAI API failed:', result.error);
