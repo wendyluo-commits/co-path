@@ -138,6 +138,9 @@ function LoadingPageContent() {
           cards = buildDefaultCards();
         }
 
+        // 获取当前语言设置
+        const currentLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
+        
         const response = await fetch('/api/reading', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -145,7 +148,7 @@ function LoadingPageContent() {
             question: question || '我的塔罗牌问题', 
             spread: spread || 'single', 
             tone: 'gentle', 
-            lang: 'zh', 
+            lang: currentLanguage, 
             seed: Math.floor(Math.random() * 1000000), 
             cards,
             useNewFormat: true  // 启用新的解读格式
