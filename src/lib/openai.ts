@@ -125,6 +125,7 @@ export async function generateTarotReadingWithAgent(
   maxRetries: number = 2
 ) {
   let lastError: Error | null = null;
+  console.log('OpenAI函数接收到的语言参数:', lang);
   
   // 基于您的Custom GPT Agent"温暖严谨塔罗解读师"的完整配置
   const systemPrompt = lang === 'en' 

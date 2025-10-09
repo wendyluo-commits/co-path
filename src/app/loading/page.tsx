@@ -143,6 +143,7 @@ function LoadingPageContent() {
 
         // 获取当前语言设置
         const currentLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
+        console.log('Loading页面发送的语言参数:', currentLanguage);
         
         const response = await fetch('/api/reading', {
           method: 'POST',

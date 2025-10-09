@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { question, spread, seed, tone, lang, cards: preselectedCards } = validationResult.data;
+    console.log('API路由接收到的语言参数:', lang);
     
     // 检查是否使用新格式（可以通过查询参数或请求体控制）
     const useNewFormat = body.useNewFormat === true;
