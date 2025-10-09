@@ -19,11 +19,38 @@ function ReadingPageContent() {
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const { openFace, setOpenFace } = useCardPreview();
 
   // 检查是否是新的数据结构
   const isNewFormat = (data: any): data is MixedTarotReading => {
     return data && 'readingResults' in data && Array.isArray(data.readingResults);
+  };
+
+  // 语言支持
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
+    setLanguage(savedLanguage);
+  }, []);
+
+  // UI文本
+  const uiTexts = {
+    zh: {
+      keyMessages: "KEY MESSAGES",
+      readingResults: "READING RESULTS",
+      backToHome: "返回首页",
+      copySuccess: "已复制到剪贴板",
+      errorTitle: "解读失败",
+      errorMessage: "请重试"
+    },
+    en: {
+      keyMessages: "KEY MESSAGES", 
+      readingResults: "READING RESULTS",
+      backToHome: "Back to Home",
+      copySuccess: "Copied to clipboard",
+      errorTitle: "Reading Failed",
+      errorMessage: "Please try again"
+    }
   };
 
   // 卡牌对象到图片文件名的映射函数
@@ -630,7 +657,7 @@ function ReadingPageContent() {
           {/* Reading Results Title */}
           <div className="mt-8 mb-6">
             <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
-              READING RESULTS
+              {uiTexts[language].readingResults}
             </h2>
           </div>
 
@@ -756,9 +783,9 @@ function ReadingPageContent() {
         {isNewFormat(reading) && reading.keyMessages && (
           <div className="max-w-[480px] mx-auto px-6">
             <div className="mt-6 mb-6">
-              <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
-                KEY MESSAGES
-              </h2>
+            <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
+              {uiTexts[language].keyMessages}
+            </h2>
             </div>
           </div>
         )}
