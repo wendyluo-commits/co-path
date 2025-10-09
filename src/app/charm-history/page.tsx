@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import BottomNav from '@/components/BottomNav';
 
 export default function CharmHistoryPage() {
   const router = useRouter();
@@ -32,6 +31,8 @@ export default function CharmHistoryPage() {
       name: "心灵之杯",
       type: "charm_cup",
       description: "情感与连结的守护",
+      quote: "爱是灵魂的食粮",
+      greekQuote: "εὐδαιμονία ἐστὶν ἐνέργεια ψυχῆς",
       isActive: true,
       endTime: "21:18"
     },
@@ -40,6 +41,8 @@ export default function CharmHistoryPage() {
       name: "智慧之剑",
       type: "charm_sword", 
       description: "思维与决断的守护",
+      quote: "智慧是力量的源泉",
+      greekQuote: "σοφία ἐστὶν δύναμις",
       isActive: false,
       endTime: "已结束"
     },
@@ -47,7 +50,9 @@ export default function CharmHistoryPage() {
       id: 3,
       name: "力量之杖",
       type: "charm_wand",
-      description: "行动与意志的守护", 
+      description: "行动与意志的守护",
+      quote: "意志决定命运",
+      greekQuote: "ἡ βούλησις κρίνει τὴν μοίραν",
       isActive: false,
       endTime: "已结束"
     }
@@ -95,33 +100,29 @@ export default function CharmHistoryPage() {
   });
 
   return (
-    <div className="min-h-screen pb-24" style={{
-      backgroundImage: 'url(/bg_charm_history.png)',
-      backgroundSize: 'cover',
+    <div className="min-h-screen w-full overflow-hidden" style={{
+      backgroundImage: 'url("/bg_charm_history.png")',
+      backgroundSize: '100% 100%',
       backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
+      minHeight: '100vh',
+      height: '100vh'
     }}>
-      {/* 导航栏 */}
-      <div className="flex items-center justify-center p-6 pt-safe relative" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}>
-        <button
-          onClick={() => router.back()}
-          className="absolute left-6 p-2 hover:opacity-70 transition-opacity"
-        >
-          <img src="/black_arrow.png" alt="Back" className="h-6 w-6" />
-        </button>
-        <h1 
-          className="text-4xl text-black font-semibold"
-          style={{
-            fontFamily: "'Red Rose', serif",
-            fontWeight: 400,
-          }}
-        >
-          Charm
-        </h1>
-      </div>
+      {/* 返回按钮 */}
+      <button
+        onClick={() => router.back()}
+        className="absolute z-50 p-2 -ml-2 rounded-lg transition-colors hover:bg-white/10"
+        style={{ 
+          top: 'calc(env(safe-area-inset-top) + 24px)',
+          left: '24px'
+        }}
+        aria-label="返回"
+      >
+        <img src="/black_arrow.png" alt="返回" className="h-6 w-6" />
+      </button>
 
       {/* 星期bar */}
-      <div className="flex justify-around px-6 mb-8">
+      <div className="flex justify-around px-6 mb-8 pt-20" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 80px)' }}>
         {weekDays.map((day, index) => (
           <button
             key={index}
@@ -143,79 +144,91 @@ export default function CharmHistoryPage() {
 
       {/* 御守卡片区域 */}
       <main className="flex flex-col items-center px-6">
-        {/* 左右箭头 */}
-        <div className="flex items-center justify-between w-full mb-8">
+        {/* 御守卡片区域 */}
+        <div className="relative w-full flex justify-center items-center mb-8">
+          {/* 左右箭头 - 绝对定位 */}
           <button
             onClick={goToPreviousDay}
-            className="p-2 hover:opacity-70 transition-opacity"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40 p-2 hover:opacity-70 transition-opacity"
           >
-            <img src="/black_arrow.png" alt="Previous" className="h-8 w-8 object-contain" />
+            <img src="/black_left.png" alt="Previous" className="h-8 w-8 object-contain" />
           </button>
-          
-          <div className="flex-1 flex justify-center items-center">
-            <div className="relative w-96 h-[480px]">
-              {/* 堆叠的御守卡片 */}
-              {sortedCharms.map((charm, index) => (
-                <div
-                  key={charm.id}
-                  className={`absolute cursor-pointer transition-all duration-300 ${
-                    index === 0 ? 'z-30' : 'z-20'
-                  }`}
-                  style={{
-                    transform: `translateY(${index * 8}px) translateX(${index * 4}px)`,
-                    opacity: index === 0 ? 1 : 0.5,
-                    left: index === 0 ? 0 : index * 8,
-                  }}
-                  onClick={() => handleCardClick(mockCharms.findIndex(c => c.id === charm.id))}
-                >
-                  <div className="w-96 h-[480px] relative">
-                    {/* 御守图标 */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <img
-                        src={`/${charm.type}.png`}
-                        alt={charm.name}
-                        className="w-40 h-40 object-contain"
-                      />
-                    </div>
-
-                    {/* 御守信息 - 只在第一张卡片显示 */}
-                    {index === 0 && (
-                      <div className="absolute bottom-4 left-4 right-4 text-center text-black">
-                        <div className="text-sm font-medium">{charm.name}</div>
-                        <div className="text-xs opacity-75">{charm.endTime}</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           <button
             onClick={goToNextDay}
-            className="p-2 hover:opacity-70 transition-opacity"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40 p-2 hover:opacity-70 transition-opacity"
           >
-            <img src="/black_arrow.png" alt="Next" className="h-8 w-8 rotate-180 object-contain" />
+            <img src="/black_left.png" alt="Next" className="h-8 w-8 rotate-180 object-contain" />
           </button>
+
+          {/* 御守卡片容器 - 居中，需要更大的容器来容纳旋转的卡片 */}
+          <div className="relative w-[90vw] max-w-[600px] h-[400px] sm:h-[500px] overflow-visible">
+            {/* 堆叠的御守卡片 */}
+            {sortedCharms.map((charm, index) => (
+              <div
+                key={charm.id}
+                className={`absolute cursor-pointer transition-all duration-300 ${
+                  index === 0 ? 'z-30' : 'z-20'
+                }`}
+                style={{
+                  transform: `rotate(${index * 5}deg)`,
+                  transformOrigin: 'center bottom',
+                  left: '50%',
+                  top: '50%',
+                  marginLeft: '-50vw',
+                  marginTop: '-25vh',
+                  width: '100vw',
+                  height: '50vh',
+                  maxWidth: '400px',
+                  maxHeight: '500px',
+                  opacity: index === 0 ? 1 : 0.5,
+                }}
+                onClick={() => handleCardClick(mockCharms.findIndex(c => c.id === charm.id))}
+              >
+                <div className="w-full h-full relative">
+                  {/* 御守图标 */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src={`/${charm.type}.png`}
+                      alt={charm.name}
+                      className="w-64 h-64 sm:w-96 sm:h-96 object-contain"
+                    />
+                  </div>
+
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* 当前选中的御守信息 */}
         {sortedCharms.length > 0 && (
-          <div className="text-center text-black mt-8">
-            <h2 className="text-2xl font-semibold mb-2">
-              {`{${sortedCharms[0].name}}`}
-            </h2>
-            <p className="text-lg mb-3">
-              {sortedCharms[0].description}
-            </p>
-            <p className="text-base mb-3 italic">
-              {sortedCharms[0].isActive ? `剩余时间: ${sortedCharms[0].endTime}` : `结束时间: ${sortedCharms[0].endTime}`}
-            </p>
+          <div className="text-center text-black mt-4 sm:mt-6 pb-16 sm:pb-32 max-w-sm mx-auto px-4 sm:px-6">
+            <div className="mb-8 sm:mb-12">
+              {/* 第一部分：御守名称和描述 */}
+              <div className="mb-[60px]">
+                <h2 className="text-2xl font-semibold mb-2 text-black">
+                  {`{${sortedCharms[0].name}}`}
+                </h2>
+                <p className="text-lg text-black mb-3">
+                  {sortedCharms[0].description}
+                </p>
+              </div>
+              
+              {/* 第二部分：引言和希腊文 */}
+              <div>
+                <p className="text-base text-black mb-3 italic">
+                  {sortedCharms[0].quote}
+                </p>
+                <p className="text-sm text-black font-mono mb-4">
+                  {sortedCharms[0].greekQuote}
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </main>
 
-      <BottomNav />
     </div>
   );
 }
