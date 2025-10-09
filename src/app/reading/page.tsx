@@ -632,7 +632,6 @@ function ReadingPageContent() {
             <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
               READING RESULTS
             </h2>
-            <div className="mt-3 mx-2 h-px bg-[#ABABAB]"></div>
           </div>
 
           {/* Reading Body */}
@@ -700,7 +699,6 @@ function ReadingPageContent() {
                             />
                           </div>
                         )}
-                        <div className="ml-2 mr-20 h-px bg-white"></div>
                       </div>
                     )}
                   </div>
@@ -740,10 +738,6 @@ function ReadingPageContent() {
           </article>
         </div>
         
-        {/* 最后一段解读和Key Messages之间的灰色粗分割线 */}
-        {isNewFormat(reading) && reading.keyMessages && (
-          <div className="mt-2 mb-8 h-5 bg-gray-400"></div>
-        )}
         
         {/* Component 2 Image */}
         {isNewFormat(reading) && reading.keyMessages && (
@@ -763,9 +757,8 @@ function ReadingPageContent() {
           <div className="max-w-[480px] mx-auto px-6">
             <div className="mt-6 mb-6">
               <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
-                KEYMESSAGES
+                KEY MESSAGES
               </h2>
-              <div className="mt-3 mx-2 h-px bg-[#ABABAB]"></div>
             </div>
           </div>
         )}

@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ReadingRequestSchema, SpreadType } from '@/schemas/reading.schema';
 import { X, RefreshCw } from 'lucide-react';
+import LanguageToggle from '@/components/LanguageToggle';
+import { questions, uiTexts } from '@/data/questions';
 
 function StartPageContent() {
   const router = useRouter();
@@ -17,6 +19,7 @@ function StartPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
 
   // 禁止页面滑动
   useEffect(() => {
@@ -33,31 +36,32 @@ function StartPageContent() {
     };
   }, []);
 
+  // 语言切换监听
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
+    setLanguage(savedLanguage);
+    
+    const handleLanguageChange = (event: CustomEvent) => {
+      const newLanguage = event.detail.language;
+      setLanguage(newLanguage);
+      setSuggestions(questions[newLanguage].slice(0, 7));
+    };
+
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+  }, []);
+
   const glowStyle = {
     boxShadow: isFocused
       ? '0 0 0 2px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.2), 0 0 60px rgba(59, 130, 246, 0.1)'
       : '0 0 0 1px rgba(59, 130, 246, 0.3), 0 0 15px rgba(59, 130, 246, 0.2), 0 0 30px rgba(59, 130, 246, 0.15)'
   };
 
-  const baseSuggestionPool = [
-    // 职业方向探索（4个）
-    "我当下的事业主线应该是什么？",
-    "我的经历正把我推向哪条事业路径？",
-    "我目前最大的职业瓶颈是什么？",
-    "什么因素能助我更顺利地找到理想工作？",
-    
-    
-    // 情感与成长（4个）
-    "现在是什么正在消耗我的力量？",
-    "我怎样才能更勇敢地面对未知与变化？",
-    "我内心最深的焦虑是什么？",
-    "我如何在职业发展中保持平衡？",
-  ];
-  const [suggestions, setSuggestions] = useState<string[]>(baseSuggestionPool.slice(0, 7));
+  const [suggestions, setSuggestions] = useState<string[]>(questions[language].slice(0, 7));
 
   const refreshSuggestions = () => {
     // Simple shuffle and take 7
-    const pool = [...baseSuggestionPool].sort(() => Math.random() - 0.5).slice(0, 7);
+    const pool = [...questions[language]].sort(() => Math.random() - 0.5).slice(0, 7);
     setSuggestions(pool);
   };
 
@@ -110,7 +114,7 @@ function StartPageContent() {
           >
             <img src="/white_arrow.png" alt="返回" className="h-6 w-6" />
           </button>
-          <div className="w-10" />
+          <LanguageToggle />
         </div>
       </header>
 
@@ -122,7 +126,9 @@ function StartPageContent() {
             <div className="mt-8 w-full">
               {/* 添加"我的疑问是"文字 */}
               <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-white text-left">我的疑问是</h2>
+                <h2 className="text-2xl font-semibold text-white text-left">
+                  {uiTexts[language].title}
+                </h2>
               </div>
               <div className="relative w-full">
                 {/* glow */}
@@ -137,7 +143,7 @@ function StartPageContent() {
                   }}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
-                  placeholder=""
+                  placeholder={uiTexts[language].placeholder}
                   className="relative w-full bg-white rounded-[8px] border-2 border-blue-300 px-6 py-4 h-16 placeholder-gray-400 text-[16px] text-black focus:outline-none focus:ring-2 focus:ring-blue-300/20"
                   aria-invalid={error ? 'true' : 'false'}
                 />
@@ -203,7 +209,7 @@ function StartPageContent() {
             disabled={isLoading || !question.trim()}
             className={`w-full h-[56px] rounded-[8px] bg-black text-white text-[15.5px] font-medium border border-white transition active:opacity-90 disabled:opacity-40 disabled:text-white`}
           >
-            选好了
+            {uiTexts[language].submit}
           </button>
           <div className="mt-3 flex justify-center">
             <button
@@ -212,7 +218,7 @@ function StartPageContent() {
               className="text-[14px] text-white hover:text-gray-200 px-4 py-2"
               aria-label="跳过"
             >
-              跳过
+              {uiTexts[language].skip}
             </button>
           </div>
         </div>

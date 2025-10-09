@@ -52,7 +52,7 @@ export default function DailyTarotEntry() {
     slidesToScroll: 1,          // 一次滚 1 张
     containScroll: 'keepSnaps', // 不裁剪/合并 snap
     skipSnaps: false,
-    loop: true                  // 无限循环
+    loop: false                 // 停止无限循环，只能滑动到最后一个
   };
 
 
