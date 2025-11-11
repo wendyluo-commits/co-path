@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { useCardPreview, Face } from '@/components/useCardPreview';
 import { CardDetailOverlay } from '@/components/CardDetailOverlay';
 import { saveReadingToHistory } from '@/lib/history';
+import { ScrollHint } from '@/components/ScrollHint';
 
 function ReadingPageContent() {
   const router = useRouter();
@@ -484,6 +485,7 @@ function ReadingPageContent() {
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
+        <ScrollHint />
         <div className="max-w-[480px] mx-auto px-6">
           {/* Question Display */}
           {question && (

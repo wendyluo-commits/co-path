@@ -3,6 +3,7 @@ import { ReadingRequestSchema, TarotReadingSchema, MixedTarotReadingSchema } fro
 import { drawCards, composeContext, lookupCard } from '@/lib/tarot';
 import { generateTarotReadingWithAgent, generateNewTarotReading } from '@/lib/openai';
 import { detectSensitiveContent } from '@/prompts/reading';
+import { generateFallbackReading } from '@/lib/fallback-readings';
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,6 +77,15 @@ export async function POST(request: NextRequest) {
     
     if (!result.success) {
       console.error('OpenAI API failed:', result.error);
+      
+      // 检查是否是API错误（配额超限、API Key错误等）
+      if (result.error.includes('quota') || result.error.includes('429') || 
+          result.error.includes('401') || result.error.includes('API key') ||
+          result.error.includes('Incorrect API key')) {
+        console.log('API error detected, using fallback readings:', result.error);
+        const fallbackReading = generateFallbackReading(question, question);
+        return NextResponse.json(fallbackReading, { status: 200 });
+      }
       
       // 降级处理 - 返回基础模板响应
       const fallbackReading = useNewFormat 

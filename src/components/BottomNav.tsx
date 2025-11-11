@@ -9,24 +9,24 @@ export default function BottomNav() {
   const navItems = [
     {
       id: 'amulet',
-      label: '御守',
+      label: 'Charm',
       path: '/amulet',
-      iconOff: '/御守_off.png',
-      iconOn: '/御守_on.png',
+      iconOff: '/%E5%BE%A1%E5%AE%88_off.png',
+      iconOn: '/%E5%BE%A1%E5%AE%88_on.png',
     },
     {
       id: 'reading',
-      label: '解读',
+      label: 'Read',
       path: '/',
-      iconOff: '/解读_off.png',
-      iconOn: '/解读_on.png',
+      iconOff: '/%E8%A7%A3%E8%AF%BB_off.png',
+      iconOn: '/%E8%A7%A3%E8%AF%BB_on.png',
     },
     {
       id: 'profile',
-      label: '我',
+      label: 'You',
       path: '/profile',
-      iconOff: '/我_off.png',
-      iconOn: '/我_on.png',
+      iconOff: '/%E6%88%91_off.png',
+      iconOn: '/%E6%88%91_on.png',
     },
   ];
 
@@ -48,7 +48,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'transparent' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-t border-gray-600">
       <div className="flex items-center justify-around h-20 max-w-screen-lg mx-auto px-8">
         {navItems.map((item) => {
           const active = isActive(item.path);
@@ -56,13 +56,22 @@ export default function BottomNav() {
             <button
               key={item.id}
               onClick={() => router.push(item.path)}
-              className="flex flex-col items-center justify-center flex-1 h-full transition-opacity hover:opacity-70"
+              className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ${
+                active ? 'opacity-100' : 'opacity-60 hover:opacity-80'
+              }`}
             >
               <img
                 src={active ? item.iconOn : item.iconOff}
                 alt={item.label}
-                className="h-12 w-12 object-contain"
+                className={`h-8 w-8 object-contain mb-1 ${
+                  active ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''
+                }`}
               />
+              <span className={`text-xs font-medium ${
+                active ? 'text-white' : 'text-gray-400'
+              }`}>
+                {item.label}
+              </span>
             </button>
           );
         })}
@@ -70,4 +79,3 @@ export default function BottomNav() {
     </nav>
   );
 }
-

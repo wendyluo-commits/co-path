@@ -32,13 +32,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI塔罗解读 - 获得人生洞察与指引",
-  description: "通过AI驱动的塔罗牌解读，为您的人生问题提供洞察和指引。支持单张牌和三张牌解读，仅供娱乐和自我反思使用。",
-  keywords: "塔罗牌,AI解读,人生指引,自我反思,娱乐占卜",
-  authors: [{ name: "AI塔罗解读团队" }],
+  title: "AI Tarot Reading - Get Life Insights and Guidance",
+  description: "Get insights and guidance for your life questions through AI-powered tarot card readings. Supports single card and three-card readings, for entertainment and self-reflection purposes only.",
+  keywords: "tarot cards,AI reading,life guidance,self-reflection,entertainment divination",
+  authors: [{ name: "AI Tarot Reading Team" }],
   openGraph: {
-    title: "AI塔罗解读",
-    description: "通过AI驱动的塔罗牌解读，获得人生洞察与指引",
+    title: "AI Tarot Reading",
+    description: "Get life insights and guidance through AI-powered tarot card readings",
     type: "website",
   },
 };
