@@ -1,182 +1,192 @@
-# AI 塔罗解读 Web 应用
+AI Tarot Reading Web App
 
-基于 Next.js 和 OpenAI 的 AI 驱动塔罗牌解读服务，提供单张牌和三张牌解读功能。
+An AI-powered tarot interpretation service built with Next.js and OpenAI, providing both single-card insights and three-card (Past–Present–Future) readings.
 
-## 🌟 特性
+🌟 Features
 
-- **AI 驱动解读**: 使用 OpenAI GPT-4o 和 Structured Outputs 确保高质量、结构化的解读结果
-- **多种牌阵**: 支持单张牌快速洞察和三张牌（过去-现在-未来）全面解读
-- **个性化体验**: 可选择温和或直接的解读语气
-- **安全边界**: 内置安全检测，对敏感话题提供适当的边界提示
-- **响应式设计**: 适配桌面和移动设备
-- **隐私保护**: 不存储用户问题，仅在解读期间临时处理
+AI-Powered Interpretations
+Uses OpenAI GPT-4o with structured outputs to generate high-quality and consistent tarot interpretations.
 
-## 🛠 技术栈
+Multiple Spreads
+Supports both single-card quick insights and three-card spreads for deeper readings (Past–Present–Future).
 
-- **框架**: Next.js 14 (App Router)
-- **语言**: TypeScript
-- **样式**: Tailwind CSS
-- **AI 模型**: OpenAI GPT-4o
-- **验证**: Zod
-- **部署**: Vercel
-- **图标**: Lucide React
+Personalized Experience
+Users can choose between gentle or direct interpretation tones.
 
-## 🚀 快速开始
+Safety Boundaries
+Built-in safety checks provide appropriate boundaries and guidance when sensitive topics appear.
 
-### 环境要求
+Responsive Design
+Optimized for both desktop and mobile devices.
 
-- Node.js 18+
-- npm 或 yarn
-- OpenAI API Key
+Privacy Protection
+User questions are not stored and are processed only temporarily during interpretation.
 
-### 安装步骤
+🛠 Tech Stack
 
-1. **克隆项目**
-   ```bash
-   git clone <repository-url>
-   cd web
-   ```
+Framework: Next.js 14 (App Router)
 
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
+Language: TypeScript
 
-3. **配置环境变量**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   编辑 `.env.local` 文件，添加必要的环境变量：
-   ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   MODEL_NAME=gpt-4o
-   NEXT_PUBLIC_APP_NAME=AI塔罗解读
-   ```
+Styling: Tailwind CSS
 
-4. **启动开发服务器**
-   ```bash
-   npm run dev
-   ```
+AI Model: OpenAI GPT-4o
 
-5. **访问应用**
-   打开浏览器访问 [http://localhost:3000](http://localhost:3000)
+Validation: Zod
 
-## 📁 项目结构
+Deployment: Vercel
 
-```
+Icons: Lucide React
+
+🚀 Getting Started
+Requirements
+
+Node.js 18+
+
+npm or yarn
+
+OpenAI API Key
+
+Installation
+1. Clone the repository
+git clone <repository-url>
+cd web
+2. Install dependencies
+npm install
+3. Configure environment variables
+cp .env.example .env.local
+
+Edit .env.local and add the required variables:
+
+OPENAI_API_KEY=your_openai_api_key_here
+MODEL_NAME=gpt-4o
+NEXT_PUBLIC_APP_NAME=AI Tarot Reading
+4. Start the development server
+npm run dev
+5. Open the application
+
+Visit:
+
+http://localhost:3000
+📁 Project Structure
 src/
 ├── app/                    # Next.js App Router
-│   ├── api/               # API 路由
-│   │   ├── reading/       # 塔罗解读 API
-│   │   └── health/        # 健康检查 API
-│   ├── reading/           # 解读结果页
-│   ├── terms/             # 服务条款页
-│   ├── privacy/           # 隐私政策页
-│   └── page.tsx           # 主页
-├── components/            # 可复用组件
-├── lib/                   # 工具库
-│   ├── openai.ts         # OpenAI 客户端
-│   └── tarot.ts          # 塔罗牌逻辑
-├── data/                  # 静态数据
-│   └── tarot-cards.json  # 塔罗牌知识库
-├── schemas/               # 数据验证
-│   └── reading.schema.ts  # 解读数据结构
-└── prompts/               # AI 提示词
-    └── reading.ts         # 解读提示词模板
-```
+│   ├── api/                # API routes
+│   │   ├── reading/        # Tarot reading API
+│   │   └── health/         # Health check API
+│   ├── reading/            # Reading result page
+│   ├── terms/              # Terms of service
+│   ├── privacy/            # Privacy policy
+│   └── page.tsx            # Homepage
+├── components/             # Reusable components
+├── lib/                    # Utility libraries
+│   ├── openai.ts           # OpenAI client
+│   └── tarot.ts            # Tarot card logic
+├── data/                   # Static data
+│   └── tarot-cards.json    # Tarot card knowledge base
+├── schemas/                # Data validation
+│   └── reading.schema.ts   # Reading data schema
+└── prompts/                # AI prompt templates
+    └── reading.ts          # Reading prompt templates
+🔧 API Endpoints
+POST /api/reading
 
-## 🔧 API 接口
+Generate a tarot interpretation.
 
-### POST /api/reading
+Request body
 
-生成塔罗解读
-
-**请求体:**
-```json
 {
-  "question": "我该如何准备下周面试？",
+  "question": "How should I prepare for next week's interview?",
   "spread": "three_card",
   "seed": 123456,
   "lang": "zh",
   "tone": "direct"
 }
-```
 
-**响应:**
-```json
+Response
+
 {
   "spread": "three_card",
-  "question": "我该如何准备下周面试？",
+  "question": "How should I prepare for next week's interview?",
   "cards": [...],
-  "overall": "整体解读内容...",
-  "action_steps": ["具体行动建议..."],
-  "safety_note": "安全提示（如有）",
+  "overall": "Overall interpretation...",
+  "action_steps": ["Actionable advice..."],
+  "safety_note": "Safety notice (if applicable)",
   "tone": "direct"
 }
-```
+GET /api/health
 
-### GET /api/health
+Service health check.
 
-服务健康检查
+Response
 
-**响应:**
-```json
 {
   "ok": true,
   "timestamp": "2024-08-20T10:00:00.000Z",
   "version": "1.0.0",
   "environment": "production"
 }
-```
+🛡 Security Features
 
-## 🛡 安全特性
+Content Safety
+Automatically detects sensitive topics and provides appropriate guidance.
 
-- **内容安全**: 自动检测敏感话题并提供适当的边界提示
-- **数据保护**: 不长期存储用户问题，仅在解读期间临时处理
-- **错误处理**: 完善的错误处理和降级机制
-- **速率限制**: 防止滥用的保护机制
+Data Protection
+User questions are not stored and are processed only during interpretation.
 
-## 📋 部署到 Vercel
+Error Handling
+Robust error handling with graceful fallback mechanisms.
 
-1. **连接 Git 仓库**
-   - 登录 Vercel 控制台
-   - 导入 Git 仓库
+Rate Limiting
+Prevents abuse of the service.
 
-2. **配置环境变量**
-   在 Vercel 项目设置中添加环境变量：
-   - `OPENAI_API_KEY`
-   - `MODEL_NAME`
-   - `NEXT_PUBLIC_APP_NAME`
+📋 Deploying to Vercel
 
-3. **部署**
-   Vercel 会自动检测 Next.js 项目并部署
+Connect your Git repository
 
-## 🧪 测试
+Log in to the Vercel dashboard
 
-```bash
-# 运行类型检查
+Import your Git repository
+
+Configure environment variables
+
+Add the following variables in your Vercel project settings:
+
+OPENAI_API_KEY
+
+MODEL_NAME
+
+NEXT_PUBLIC_APP_NAME
+
+Deploy
+
+Vercel will automatically detect the Next.js project and deploy it.
+
+🧪 Testing
+
+Run the following commands:
+
+# Type checking
 npm run type-check
 
-# 运行 linter
+# Linting
 npm run lint
 
-# 构建项目
+# Build the project
 npm run build
-```
+📄 License
 
-## 📄 许可证
+This project is intended for learning and entertainment purposes only.
 
-本项目仅供学习和娱乐使用。
+⚠️ Disclaimer
 
-## ⚠️ 免责声明
+This service is intended for entertainment and self-reflection only.
+It does not provide medical, legal, or financial advice. If you are experiencing a safety or health emergency, please contact a qualified professional or local emergency services.
 
-本服务仅用于娱乐与自我反思，不提供医疗、法律或财务建议。如遇到安全或健康风险，请立即联系当地专业机构或紧急服务。
+🤝 Contributions
 
-## 🤝 贡献
+Contributions are welcome. Feel free to submit Issues or Pull Requests to improve the project.
 
-欢迎提交 Issue 和 Pull Request 来改进项目。
+📞 Contact
 
-## 📞 联系我们
-
-如有任何问题或建议，请通过项目 Issue 与我们联系。
+If you have any questions or suggestions, please open an Issue in the repository.
