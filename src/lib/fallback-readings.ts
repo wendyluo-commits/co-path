@@ -71,8 +71,10 @@ export const FALLBACK_READINGS = {
 };
 
 // 生成预设解读内容
-export function generateFallbackReading(userPrompt: string, question?: string) {
-  const isEnglish = /[a-zA-Z]/.test(userPrompt);
+export function generateFallbackReading(userPrompt: string, question?: string, preferredLang?: 'zh' | 'en') {
+  const isEnglish = preferredLang
+    ? preferredLang === 'en'
+    : /[a-zA-Z]/.test(userPrompt);
   const fallbackData = isEnglish ? FALLBACK_READINGS.en : FALLBACK_READINGS.zh;
   const cards = Object.keys(fallbackData);
   const randomCard = cards[Math.floor(Math.random() * cards.length)];

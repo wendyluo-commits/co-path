@@ -32,8 +32,9 @@ export default function BottomNav() {
 
   const isActive = (path: string) => {
     if (path === '/') {
-      // 首页及其相关页面都算激活
-      return pathname === '/' || 
+      // 首页及其相关页面都算激活（/ 经 rewrite 会显示为 /home）
+      return pathname === '/' ||
+             pathname === '/home' ||
              pathname.startsWith('/start') || 
              pathname.startsWith('/ritual') || 
              pathname.startsWith('/draw') || 

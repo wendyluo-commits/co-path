@@ -77,20 +77,21 @@ export async function POST(request: NextRequest) {
     
     if (!result.success) {
       console.error('OpenAI API failed:', result.error);
+      const errorMessage = result.error ?? '';
       
       // 检查是否是API错误（配额超限、API Key错误等）
-      if (result.error.includes('quota') || result.error.includes('429') || 
-          result.error.includes('401') || result.error.includes('API key') ||
-          result.error.includes('Incorrect API key')) {
+      if (errorMessage.includes('quota') || errorMessage.includes('429') || 
+          errorMessage.includes('401') || errorMessage.includes('API key') ||
+          errorMessage.includes('Incorrect API key')) {
         console.log('API error detected, using fallback readings:', result.error);
-        const fallbackReading = generateFallbackReading(question, question);
+        const fallbackReading = generateFallbackReading(question, question, lang);
         return NextResponse.json(fallbackReading, { status: 200 });
       }
       
       // 降级处理 - 返回基础模板响应
       const fallbackReading = useNewFormat 
-        ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote)
-        : createFallbackReading(question, spread, drawnCards, tone, safetyNote);
+        ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
+        : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
       
       return NextResponse.json(fallbackReading, { status: 200 });
     }
@@ -106,8 +107,8 @@ export async function POST(request: NextRequest) {
       } else {
         // 少于期望数量，采用降级模板，避免前端出现牌数不一致
         const fallbackReading = useNewFormat 
-          ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote)
-          : createFallbackReading(question, spread, drawnCards, tone, safetyNote);
+          ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
+          : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
         return NextResponse.json(fallbackReading, { status: 200 });
       }
     }
@@ -133,8 +134,8 @@ export async function POST(request: NextRequest) {
       
       // 降级处理
       const fallbackReading = useNewFormat 
-        ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote)
-        : createFallbackReading(question, spread, drawnCards, tone, safetyNote);
+        ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
+        : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
       return NextResponse.json(fallbackReading, { status: 200 });
     }
 
@@ -181,28 +182,90 @@ function createMixedFormatFallbackReading(
     };
   }>,
   tone: string,
-  safetyNote: string | null
+  safetyNote: string | null,
+  lang: 'zh' | 'en' = 'zh'
 ) {
   // 保留原有的卡牌结构
-  const cards = drawnCards.map(card => ({
-    name: card.name,
-    suit: "Major" as const,
-    number: 0,
-    position: card.position,
-    orientation: card.orientation,
-    keywords: card.data[card.orientation].keywords,
-    interpretation: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`,
-    advice: card.data[card.orientation].advice.join('；') || "保持开放的心态，相信自己的判断力。"
-  }));
+  const positionTranslations: Record<string, string> = {
+    '当前状况': 'Current Situation',
+    '现状': 'Present',
+    '行动': 'Action',
+    '结果': 'Outcome',
+    '过去': 'Past',
+    '现在': 'Present',
+    '未来': 'Future',
+    '建议': 'Advice',
+    '现状/瓶颈': 'Current Bottleneck',
+    '行动/策略': 'Action / Strategy',
+    '结果/走向': 'Outcome / Direction'
+  };
+
+  const cards = drawnCards.map(card => {
+    const positionLabel = lang === 'en'
+      ? positionTranslations[card.position] || card.position
+      : card.position;
+
+    const interpretation = lang === 'en'
+      ? `${card.name} (${card.orientation === 'upright' ? 'upright' : 'reversed'}) appears in the position of ${positionLabel}. This card invites you to reflect on the current situation and draw insight from it.`
+      : `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`;
+
+    const adviceText = lang === 'en'
+      ? "Stay open-minded and trust your intuition."
+      : "保持开放的心态，相信自己的判断力。";
+
+    return {
+      name: card.name,
+      suit: "Major" as const,
+      number: 0,
+      position: card.position,
+      orientation: card.orientation,
+      keywords: card.data[card.orientation].keywords,
+      interpretation,
+      advice: card.data[card.orientation].advice.join(lang === 'en' ? '; ' : '；') || adviceText
+    };
+  });
 
   // 添加新的解读内容结构
-  const readingResults = drawnCards.map(card => ({
-    heading: `${card.position} - ${card.name}`,
-    body: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`,
-    bodyFull: null,
-    truncated: false,
-    tip: `${card.name}牌提示你——\n保持开放的心态，相信自己的判断力。`
-  }));
+  const readingResults = drawnCards.map(card => {
+    const positionLabel = lang === 'en'
+      ? positionTranslations[card.position] || card.position
+      : card.position;
+
+    const heading = lang === 'en'
+      ? `${positionLabel} - ${card.name}`
+      : `${card.position} - ${card.name}`;
+
+    const body = lang === 'en'
+      ? `${card.name} (${card.orientation === 'upright' ? 'upright' : 'reversed'}) appears in the position of ${positionLabel}. This card invites you to examine your present circumstances and extract deeper meaning.`
+      : `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`;
+
+    const tip = lang === 'en'
+      ? `${card.name} card reminds you —
+Stay open-minded and trust your intuition before taking action.`
+      : `${card.name}牌提示你——
+保持开放的心态，相信自己的判断力。`;
+
+    return {
+      heading,
+      body,
+      bodyFull: null,
+      truncated: false,
+      tip
+    };
+  });
+
+  const overallText = lang === 'en'
+    ? "The tarot spread offers insight into your present situation. Each card carries a symbolic message—reflect on it and apply it to your lived experience. Remember, tarot is a tool for self-reflection; you remain in control of your decisions."
+    : "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。";
+
+  const keyMessagesTitle = lang === 'en' ? 'KEY MESSAGES' : '关键信息';
+  const keyMessagesBody = lang === 'en'
+    ? "The cards highlight important patterns and energies at play. Take note of the recurring themes and the transitions between each position."
+    : "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。";
+
+  const buttonText = lang === 'en'
+    ? 'Generate a Good-Luck Charm →'
+    : '生成好运御守 →';
 
   return {
     // 保留原有的基础字段
@@ -212,22 +275,22 @@ function createMixedFormatFallbackReading(
     cards,
     
     // 添加新的解读内容结构
-    readingResultsTitle: "READING RESULTS",
+    readingResultsTitle: lang === 'en' ? 'READING RESULTS' : '解读结果',
     readingResults,
     separatorDecorations: [
       { type: "starLine", positionAfterSection: 1 },
       { type: "starLine", positionAfterSection: 2 }
     ],
     keyMessages: {
-      label: "KEY MESSAGES",
+      label: lang === 'en' ? 'KEY MESSAGES' : 'KEY MESSAGES',
       decorationImageUrl: null,
-      title: "关键信息",
-      body: "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。",
+      title: keyMessagesTitle,
+      body: keyMessagesBody,
       bodyFull: null,
       truncated: false
     },
     button: {
-      text: "生成好运御守 →",
+      text: buttonText,
       action: "generateCharm",
       styleHint: "primary" as const
     },
@@ -241,14 +304,23 @@ function createMixedFormatFallbackReading(
     },
     
     // 保留原有的其他字段
-    overall: "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。",
-    action_steps: [
-      "仔细思考每张牌传达的信息",
-      "结合您的实际情况进行判断",
-      "制定具体的行动计划",
-      "保持积极乐观的心态"
-    ],
-    safety_note: safetyNote || "本解读仅供娱乐和自我反思使用，不构成专业建议。"
+    overall: overallText,
+    action_steps: lang === 'en'
+      ? [
+          'Reflect carefully on each card’s message',
+          'Compare the symbolism with your real-life circumstances',
+          'Draft a specific plan of action',
+          'Maintain a positive, optimistic mindset'
+        ]
+      : [
+          "仔细思考每张牌传达的信息",
+          "结合您的实际情况进行判断",
+          "制定具体的行动计划",
+          "保持积极乐观的心态"
+        ],
+    safety_note: safetyNote || (lang === 'en'
+      ? 'This reading is for entertainment and self-reflection purposes only and does not constitute professional advice.'
+      : '本解读仅供娱乐和自我反思使用，不构成专业建议。')
   };
 }
 
@@ -268,31 +340,77 @@ function createFallbackReading(
     };
   }>,
   tone: string,
-  safetyNote: string | null
+  safetyNote: string | null,
+  lang: 'zh' | 'en' = 'zh'
 ) {
-  const cards = drawnCards.map(card => ({
-    name: card.name,
-    suit: "Major",
-    number: 0,
-    position: card.position,
-    orientation: card.orientation,
-    keywords: card.data[card.orientation].keywords,
-    interpretation: `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`,
-    advice: card.data[card.orientation].advice.join('；') || "保持开放的心态，相信自己的判断力。"
-  }));
+  const positionTranslations: Record<string, string> = {
+    '当前状况': 'Current Situation',
+    '现状': 'Present',
+    '行动': 'Action',
+    '结果': 'Outcome',
+    '过去': 'Past',
+    '现在': 'Present',
+    '未来': 'Future',
+    '建议': 'Advice',
+    '现状/瓶颈': 'Current Bottleneck',
+    '行动/策略': 'Action / Strategy',
+    '结果/走向': 'Outcome / Direction'
+  };
+
+  const cards = drawnCards.map(card => {
+    const positionLabel = lang === 'en'
+      ? positionTranslations[card.position] || card.position
+      : card.position;
+
+    const interpretation = lang === 'en'
+      ? `${card.name} (${card.orientation === 'upright' ? 'upright' : 'reversed'}) appears in the position of ${positionLabel}. This card invites you to stay aware of your current situation and draw insight from it.`
+      : `${card.name}${card.orientation === 'upright' ? '正位' : '逆位'}出现在${card.position}的位置。这张牌提醒您关注当前的情况，并从中获得洞察。`;
+
+    const adviceText = lang === 'en'
+      ? 'Stay open-minded and trust your judgment.'
+      : '保持开放的心态，相信自己的判断力。';
+
+    return {
+      name: card.name,
+      suit: "Major",
+      number: 0,
+      position: card.position,
+      orientation: card.orientation,
+      keywords: card.data[card.orientation].keywords,
+      interpretation,
+      advice: card.data[card.orientation].advice.join(lang === 'en' ? '; ' : '；') || adviceText
+    };
+  });
+
+  const overallText = lang === 'en'
+    ? "The tarot cards offer you insight into your current situation. Each card carries a unique message—apply it to your life thoughtfully. Remember, tarot serves as a tool for reflection; you remain responsible for your ultimate choices."
+    : "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。";
+
+  const actionSteps = lang === 'en'
+    ? [
+        'Reflect carefully on each card’s message',
+        'Relate the symbolism to your real-life circumstances',
+        'Create a concrete plan of action',
+        'Maintain a positive and optimistic mindset'
+      ]
+    : [
+        "仔细思考每张牌传达的信息",
+        "结合您的实际情况进行判断",
+        "制定具体的行动计划",
+        "保持积极乐观的心态"
+      ];
+
+  const safetyText = safetyNote || (lang === 'en'
+    ? 'This reading is for entertainment and self-reflection purposes only and does not constitute professional advice.'
+    : '本解读仅供娱乐和自我反思使用，不构成专业建议。');
 
   return {
     spread,
     question,
     cards,
-    overall: "塔罗牌为您提供了当前情况的洞察。每张牌都承载着特殊的含义，请结合您的实际情况进行理解。记住，塔罗只是一个自我反思的工具，最终的决定权在您手中。",
-    action_steps: [
-      "仔细思考每张牌传达的信息",
-      "结合您的实际情况进行判断",
-      "制定具体的行动计划",
-      "保持积极乐观的心态"
-    ],
-    safety_note: safetyNote || "本解读仅供娱乐和自我反思使用，不构成专业建议。",
+    overall: overallText,
+    action_steps: actionSteps,
+    safety_note: safetyText,
     tone
   };
 }

@@ -20,8 +20,17 @@ function ReadingPageContent() {
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  const [language, setLanguage] = useState<'zh' | 'en'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('language') as 'zh' | 'en') || 'zh';
+    }
+    return 'zh';
+  });
   const { openFace, setOpenFace } = useCardPreview();
+  const [showFollowUpModal, setShowFollowUpModal] = useState(false);
+  const [followUpText, setFollowUpText] = useState('');
+  /** same_cards: 用当前牌组延伸解读；redraw: 回首页重选牌阵并重新抽牌 */
+  const [followUpMode, setFollowUpMode] = useState<'same_cards' | 'redraw'>('same_cards');
 
   // 检查是否是新的数据结构
   const isNewFormat = (data: any): data is MixedTarotReading => {
@@ -30,8 +39,15 @@ function ReadingPageContent() {
 
   // 语言支持
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
-    setLanguage(savedLanguage);
+    const handleLanguageChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ language: 'zh' | 'en' }>;
+      if (customEvent.detail?.language) {
+        setLanguage(customEvent.detail.language);
+      }
+    };
+
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
   }, []);
 
   // UI文本
@@ -42,17 +58,41 @@ function ReadingPageContent() {
       backToHome: "返回首页",
       copySuccess: "已复制到剪贴板",
       errorTitle: "解读失败",
-      errorMessage: "请重试"
+      errorMessage: "请重试",
+      followUpCta: "继续询问",
+      followUpTitle: "继续询问",
+      followUpIntro: "先选择你希望如何继续，再输入你的追问。",
+      followUpPlaceholder: "例如：在感情方面我还应该注意什么？",
+      followUpCancel: "取消",
+      followUpSubmitSame: "用当前牌组继续解读",
+      followUpSubmitRedraw: "去抽牌",
+      followUpModeSameTitle: "沿用当前牌组",
+      followUpModeSameHint: "不重新抽牌，用同一组牌针对你的追问做延伸解读。",
+      followUpModeRedrawTitle: "重新抽牌",
+      followUpModeRedrawHint:
+        "直接进入抽牌仪式，用当前牌阵重新抽一组新牌再解读（上一手牌会清空）。若需换牌阵类型，请先返回首页。",
     },
     en: {
-      keyMessages: "KEY MESSAGES", 
+      keyMessages: "KEY MESSAGES",
       readingResults: "READING RESULTS",
       backToHome: "Back to Home",
       copySuccess: "Copied to clipboard",
       errorTitle: "Reading Failed",
-      errorMessage: "Please try again"
-    }
-  };
+      errorMessage: "Please try again",
+      followUpCta: "Ask a follow-up",
+      followUpTitle: "Continue the conversation",
+      followUpIntro: "Choose how you want to continue, then enter your follow-up.",
+      followUpPlaceholder: "e.g. What should I watch for in relationships?",
+      followUpCancel: "Cancel",
+      followUpSubmitSame: "Continue with same cards",
+      followUpSubmitRedraw: "Go to draw",
+      followUpModeSameTitle: "Keep current cards",
+      followUpModeSameHint: "Same spread and cards—extended reading for your follow-up only.",
+      followUpModeRedrawTitle: "Draw again",
+      followUpModeRedrawHint:
+        "Go straight to the draw ritual with the same spread type and a fresh draw (clears this hand). To change spread, go home first.",
+    },
+  } as const;
 
   // 卡牌对象到图片文件名的映射函数
   const getCardImagePath = (card: any): string => {
@@ -330,6 +370,91 @@ function ReadingPageContent() {
   const question = searchParams.get('question') || '';
   const tone = searchParams.get('tone') || 'gentle';
 
+  /** 将当前解读页上的牌写回 sessionStorage，供 /loading 再次调用 API 时使用同一组牌 */
+  const ensureDrawResultFromReading = (r: TarotReading | MixedTarotReading) => {
+    if (typeof window === 'undefined') return;
+    const spreadVal = r.spread;
+    const cards = (r.cards || []).map((c: any) => ({
+      name: c.name,
+      orientation: c.orientation,
+      position: c.position || '',
+      suit: c.suit || 'Major',
+      number: typeof c.number === 'number' ? c.number : 0,
+      keywords: Array.isArray(c.keywords) ? c.keywords : [],
+    }));
+    sessionStorage.setItem('drawResult', JSON.stringify({ spread: spreadVal, cards }));
+  };
+
+  const buildFollowUpPrompt = (
+    followUp: string,
+    r: TarotReading | MixedTarotReading,
+    lang: 'zh' | 'en',
+    urlQuestion: string
+  ): string => {
+    const orig = r.question || urlQuestion || '';
+    let summary = '';
+    if (isNewFormat(r)) {
+      summary = r.overall || r.keyMessages?.body || '';
+    } else {
+      summary = (r as TarotReading).overall || '';
+    }
+    const truncated = summary.length > 600 ? summary.slice(0, 600) + '…' : summary;
+    if (lang === 'en') {
+      return `Follow-up question: ${followUp}\n\nPrevious question: ${orig}\n\nSummary of the previous reading:\n${truncated}\n\nPlease extend the reading using the same cards drawn, focusing on the follow-up.`;
+    }
+    return `【追问】${followUp}\n\n【原问题】${orig}\n\n【上一轮解读摘要】\n${truncated}\n\n请结合同一组已抽出的牌，针对追问给出延伸解读。`;
+  };
+
+  /** 重新抽牌流程：预填到 /start 输入框的文案（单行尽量可读） */
+  const buildRedrawPrefillQuestion = (
+    followUp: string,
+    r: TarotReading | MixedTarotReading,
+    lang: 'zh' | 'en',
+    urlQuestion: string
+  ): string => {
+    const orig = (r.question || urlQuestion || '').trim();
+    const short = orig.length > 100 ? `${orig.slice(0, 100)}…` : orig;
+    if (lang === 'en') {
+      return short
+        ? `Follow-up: ${followUp} | Earlier question: ${short}`
+        : `Follow-up: ${followUp}`;
+    }
+    return short ? `【追问】${followUp} ｜【此前】${short}` : `【追问】${followUp}`;
+  };
+
+  const handleFollowUpSubmit = () => {
+    if (!reading) return;
+    const trimmed = followUpText.trim();
+    if (!trimmed) return;
+    setShowFollowUpModal(false);
+    setFollowUpText('');
+
+    if (followUpMode === 'redraw') {
+      const prefill = buildRedrawPrefillQuestion(trimmed, reading, language, question);
+      try {
+        sessionStorage.removeItem('drawResult');
+      } catch {
+        /* ignore */
+      }
+      setFollowUpMode('same_cards');
+      const ritualParams = new URLSearchParams({
+        spread: reading.spread,
+        question: prefill,
+      });
+      router.push(`/ritual?${ritualParams.toString()}`);
+      return;
+    }
+
+    ensureDrawResultFromReading(reading);
+    const combined = buildFollowUpPrompt(trimmed, reading, language, question);
+    const params = new URLSearchParams({
+      fromRitual: 'true',
+      spread: reading.spread,
+      question: combined,
+    });
+    router.push(`/loading?${params.toString()}`);
+  };
+
   useEffect(() => {
     const loadReading = async () => {
       try {
@@ -349,7 +474,7 @@ function ReadingPageContent() {
               question: question,
               spread: drawData.spread,
               tone: tone,
-              lang: 'zh',
+              lang: language,
               cards: drawData.cards
             }),
           });
@@ -438,7 +563,7 @@ function ReadingPageContent() {
     };
 
     loadReading();
-  }, [fromDraw, fromStart, fromRitual, fromHistory, question, tone, router]);
+  }, [fromDraw, fromStart, fromRitual, fromHistory, question, tone, router, language]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -451,6 +576,14 @@ function ReadingPageContent() {
   if (!reading) {
     return <ErrorMessage message="未找到解读结果" />;
   }
+
+  const handleBack = () => {
+    if (fromHistory) {
+      router.push('/history');
+    } else {
+      router.push('/');
+    }
+  };
 
   return (
     <>
@@ -474,7 +607,7 @@ function ReadingPageContent() {
         <div className="flex items-center justify-between">
           <button 
             aria-label="返回"
-            onClick={() => router.push('/')}
+            onClick={handleBack}
             className="p-2 -ml-2 rounded-lg transition-colors"
           >
             <img src="/white_arrow.png" alt="返回" className="h-6 w-6" />
@@ -680,11 +813,12 @@ function ReadingPageContent() {
                       {result.tip && (
                         <div className="text-white text-sm leading-relaxed">
                           {(() => {
-                            // 解析tip，提取牌名和具体提醒
-                            const tipMatch = result.tip.match(/^(.+?牌提示你——)\s*(.+)$/);
-                            if (tipMatch) {
-                              const cardPrompt = tipMatch[1].replace('提示你——', '提示/提醒你 --');
-                              const specificTip = tipMatch[2];
+                            const tipZh = result.tip.match(/^(.+?牌提示你——)\s*(.+)$/);
+                            const tipEn = result.tip.match(/^(.+?card\s+reminds\s+you\s+—)\s*(.+)$/i);
+
+                            if (tipEn && language === 'en') {
+                              const cardPrompt = tipEn[1].replace('reminds you —', 'reminds you —');
+                              const specificTip = tipEn[2];
                               return (
                                 <>
                                   <p className="font-medium">{`{${cardPrompt}}`}</p>
@@ -692,7 +826,18 @@ function ReadingPageContent() {
                                 </>
                               );
                             }
-                            // 如果没有匹配到标准格式，直接显示原内容
+
+                            if (tipZh) {
+                              const cardPrompt = tipZh[1].replace('提示你——', '提示/提醒你 --');
+                              const specificTip = tipZh[2];
+                              return (
+                                <>
+                                  <p className="font-medium">{`{${cardPrompt}}`}</p>
+                                  <p className="mt-1">{specificTip}</p>
+                                </>
+                              );
+                            }
+
                             return <p>{result.tip}</p>;
                           })()}
                         </div>
@@ -817,21 +962,31 @@ function ReadingPageContent() {
         
         {/* Bottom CTA Section */}
         <section className="relative pt-8">
-          {/* CTA Button Image */}
           <div className="px-6">
-            <div className="max-w-[480px] mx-auto">
-              <img 
-                src="/button.png" 
-                alt="获取塔罗牌的祝福" 
-                className="w-1/2 h-auto cursor-pointer transition-all duration-150 ease-out hover:transform hover:-translate-y-[1px] hover:shadow-[0_6px_18px_rgba(0,0,0,0.22)] active:transform active:translate-y-0 active:opacity-90 block"
+            <div className="max-w-[480px] mx-auto flex flex-col gap-3">
+              {/* 继续询问：在「祝福」之前 */}
+              <button
+                type="button"
+                className="w-full sm:w-1/2 mx-auto bg-white/10 text-white border border-white/50 rounded-full py-3 text-base font-semibold shadow-md hover:bg-white/20 transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
                 onClick={() => {
-                  // 随机跳转到4个祝福页面之一
+                  setFollowUpMode('same_cards');
+                  setShowFollowUpModal(true);
+                }}
+              >
+                {uiTexts[language].followUpCta}
+              </button>
+              <button
+                type="button"
+                className="w-full sm:w-1/2 mx-auto bg-black text-white border border-white/70 rounded-full py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
+                onClick={() => {
                   const blessingPages = ['/sword', '/wand', '/cup', '/coins'];
                   const randomIndex = Math.floor(Math.random() * blessingPages.length);
                   const randomPage = blessingPages[randomIndex];
                   window.location.href = randomPage;
                 }}
-              />
+              >
+                {language === 'zh' ? '获取塔罗牌的祝福' : 'Receive Tarot Blessings'}
+              </button>
             </div>
           </div>
           
@@ -857,6 +1012,99 @@ function ReadingPageContent() {
           face={openFace} 
           onClose={() => setOpenFace(null)} 
         />
+      )}
+
+      {/* 继续询问弹窗 */}
+      {showFollowUpModal && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="follow-up-title"
+          onClick={() => {
+            setShowFollowUpModal(false);
+            setFollowUpMode('same_cards');
+          }}
+        >
+          <div
+            className="w-full max-w-[480px] rounded-2xl bg-[#1a1a1e] border border-white/15 shadow-2xl p-6 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="follow-up-title" className="text-lg font-semibold text-white mb-2">
+              {uiTexts[language].followUpTitle}
+            </h2>
+            <p className="text-sm text-white/70 mb-4 leading-relaxed">
+              {uiTexts[language].followUpIntro}
+            </p>
+
+            {/* 模式选择 */}
+            <div className="space-y-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setFollowUpMode('same_cards')}
+                className={`w-full text-left rounded-xl border px-4 py-3 transition-colors ${
+                  followUpMode === 'same_cards'
+                    ? 'border-white bg-white/15 ring-1 ring-white/40'
+                    : 'border-white/20 bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                <div className="text-sm font-semibold text-white">
+                  {uiTexts[language].followUpModeSameTitle}
+                </div>
+                <div className="text-xs text-white/60 mt-1 leading-relaxed">
+                  {uiTexts[language].followUpModeSameHint}
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFollowUpMode('redraw')}
+                className={`w-full text-left rounded-xl border px-4 py-3 transition-colors ${
+                  followUpMode === 'redraw'
+                    ? 'border-white bg-white/15 ring-1 ring-white/40'
+                    : 'border-white/20 bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                <div className="text-sm font-semibold text-white">
+                  {uiTexts[language].followUpModeRedrawTitle}
+                </div>
+                <div className="text-xs text-white/60 mt-1 leading-relaxed">
+                  {uiTexts[language].followUpModeRedrawHint}
+                </div>
+              </button>
+            </div>
+
+            <textarea
+              value={followUpText}
+              onChange={(e) => setFollowUpText(e.target.value)}
+              placeholder={uiTexts[language].followUpPlaceholder}
+              rows={4}
+              className="w-full rounded-xl bg-white/5 border border-white/20 text-white placeholder:text-white/40 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 resize-y min-h-[120px]"
+            />
+            <div className="mt-5 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+              <button
+                type="button"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-white/30 text-white/90 text-sm hover:bg-white/10"
+                onClick={() => {
+                  setShowFollowUpModal(false);
+                  setFollowUpText('');
+                  setFollowUpMode('same_cards');
+                }}
+              >
+                {uiTexts[language].followUpCancel}
+              </button>
+              <button
+                type="button"
+                disabled={!followUpText.trim()}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/90"
+                onClick={handleFollowUpSubmit}
+              >
+                {followUpMode === 'same_cards'
+                  ? uiTexts[language].followUpSubmitSame
+                  : uiTexts[language].followUpSubmitRedraw}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

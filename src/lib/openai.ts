@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { TarotReadingJSONSchema } from '@/schemas/reading.schema';
-import { NEW_SYSTEM_PROMPT } from '@/prompts/reading';
+import { NEW_SYSTEM_PROMPT, NEW_SYSTEM_PROMPT_EN } from '@/prompts/reading';
 
 // 初始化 OpenAI 客户端
 export const openai = new OpenAI({
@@ -43,7 +43,8 @@ export async function generateTarotReading(
           }
         },
         temperature: 0.7,
-        max_tokens: 2000
+        // GPT-5+ 等模型：仅支持 max_completion_tokens（勿使用旧参数名）
+        max_completion_tokens: 2000
       });
 
       const content = response.choices[0]?.message?.content;
@@ -104,7 +105,7 @@ export async function generateTarotReadingStream(
       ],
       stream: true,
       temperature: 0.7,
-      max_tokens: 2000
+      max_completion_tokens: 2000
     });
 
     return stream;
@@ -247,7 +248,7 @@ ${cardContext}
           }
         },
         temperature: 0.7,
-        max_tokens: 3000
+        max_completion_tokens: 3000
       });
 
       const content = response.choices[0]?.message?.content;
@@ -297,6 +298,8 @@ export async function generateNewTarotReading(
 ) {
   let lastError: Error | null = null;
   
+  const systemPrompt = lang === 'en' ? NEW_SYSTEM_PROMPT_EN : NEW_SYSTEM_PROMPT;
+
   const userPrompt = lang === 'en'
     ? `Please provide a tarot reading based on the following information:
 
@@ -324,7 +327,7 @@ ${cardContext}
         messages: [
           {
             role: "system",
-            content: NEW_SYSTEM_PROMPT
+            content: systemPrompt
           },
           {
             role: "user",
@@ -340,7 +343,7 @@ ${cardContext}
           }
         },
         temperature: 0.7,
-        max_tokens: 4000
+        max_completion_tokens: 4000
       });
 
       const content = response.choices[0]?.message?.content;

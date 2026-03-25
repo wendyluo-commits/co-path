@@ -253,8 +253,7 @@ function LoadingPageContent() {
           background: none !important;
         }
       `}</style>
-      
-      
+
       <div className="fixed inset-0 z-50 overflow-hidden">
         {/* 基础层 - Screen 1 */}
         <motion.div
@@ -300,7 +299,82 @@ function LoadingPageContent() {
           }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
         />
-        
+
+        {/* 中心动画层：漂浮卡片 + 光晕 + 星光 */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+          {/* 光晕 */}
+          <motion.div
+            className="absolute w-64 h-64 rounded-full bg-white/10 blur-3xl"
+            animate={{
+              scale: [0.9, 1.05, 0.9],
+              opacity: [0.4, 0.7, 0.4],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+
+          {/* 漂浮卡片 */}
+          <motion.div
+            className="relative w-40 h-64 rounded-xl border border-white/40 bg-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.25)]"
+            animate={{
+              y: [-8, 8, -8],
+              rotate: [-3, 3, -3],
+              boxShadow: [
+                '0 0 20px rgba(255,255,255,0.25)',
+                '0 0 40px rgba(255,255,255,0.45)',
+                '0 0 20px rgba(255,255,255,0.25)',
+              ],
+              scale: progress.percent > 90 ? [1, 1.03, 1] : 1,
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          >
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+              <div className="w-10 h-10 rounded-full border border-white/60 flex items-center justify-center text-sm text-white/90">
+                ✶
+              </div>
+              <p className="text-xs text-center text-white/80 px-4 leading-relaxed whitespace-pre-line">
+                正在为你
+                {"\n"}
+                连接塔罗能量…
+              </p>
+            </div>
+          </motion.div>
+
+          {/* 星光粒子 */}
+          <motion.div
+            className="absolute w-64 h-64"
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 rounded-full bg-white"
+                style={{
+                  top: i % 2 === 0 ? '10%' : '80%',
+                  left: i < 2 ? '15%' : '85%',
+                }}
+                animate={{
+                  scale: [0.6, 1.2, 0.6],
+                  opacity: [0.3, 1, 0.3],
+                }}
+                transition={{
+                  duration: 3 + i,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            ))}
+          </motion.div>
+        </div>
+
         {/* 进度条层 */}
         <div className="absolute bottom-20 left-0 right-0 z-20 px-8">
           <div className="max-w-md mx-auto">

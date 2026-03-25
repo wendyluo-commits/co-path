@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ReadingRequestSchema, SpreadType } from '@/schemas/reading.schema';
 import { X, RefreshCw } from 'lucide-react';
 import LanguageToggle from '@/components/LanguageToggle';
-import { questions, uiTexts } from '@/data/questions';
+import { questionCategories, uiTexts } from '@/data/questions';
 
 function StartPageContent() {
   const router = useRouter();
@@ -15,11 +15,29 @@ function StartPageContent() {
   const presetSpread = searchParams.get('spread') as SpreadType || 'single';
   const presetQuestion = searchParams.get('question') || '';
 
+  const getDefaultCategoryId = (lang: 'zh' | 'en') => questionCategories[lang]?.[0]?.id ?? '';
+
   const [question, setQuestion] = useState(presetQuestion);
+
+  // 解读页「重新抽牌」写入的预填问题（URL 无 question 时使用）
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const pre = sessionStorage.getItem('prefillQuestion');
+      if (!pre) return;
+      if (!presetQuestion.trim()) {
+        setQuestion(pre);
+      }
+      sessionStorage.removeItem('prefillQuestion');
+    } catch {
+      /* ignore */
+    }
+  }, [presetQuestion]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  const [activeCategory, setActiveCategory] = useState<string>(getDefaultCategoryId('zh'));
 
   // 禁止页面滑动
   useEffect(() => {
@@ -40,12 +58,16 @@ function StartPageContent() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') as 'zh' | 'en' || 'zh';
     setLanguage(savedLanguage);
-    setSuggestions(questions[savedLanguage].slice(0, 7));
+    const defaultCategoryId = getDefaultCategoryId(savedLanguage);
+    setActiveCategory(defaultCategoryId);
+    setSuggestions(getCategorySuggestions(savedLanguage, defaultCategoryId));
     
     const handleLanguageChange = (event: CustomEvent) => {
       const newLanguage = event.detail.language;
       setLanguage(newLanguage);
-      setSuggestions(questions[newLanguage].slice(0, 7));
+      const defaultCategoryId = getDefaultCategoryId(newLanguage);
+      setActiveCategory(defaultCategoryId);
+      setSuggestions(getCategorySuggestions(newLanguage, defaultCategoryId));
     };
 
     window.addEventListener('languageChanged', handleLanguageChange as EventListener);
@@ -60,10 +82,21 @@ function StartPageContent() {
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
+  const getCategorySuggestions = (lang: 'zh' | 'en', categoryId: string, randomized = false) => {
+    const category = questionCategories[lang]?.find((item) => item.id === categoryId);
+    if (!category) return [];
+    const source = randomized ? [...category.questions].sort(() => Math.random() - 0.5) : category.questions;
+    return source.slice(0, 7);
+  };
+
   const refreshSuggestions = () => {
-    // Simple shuffle and take 7
-    const pool = [...questions[language]].sort(() => Math.random() - 0.5).slice(0, 7);
-    setSuggestions(pool);
+    if (!activeCategory) return;
+    setSuggestions(getCategorySuggestions(language, activeCategory, true));
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    setSuggestions(getCategorySuggestions(language, categoryId));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,26 +202,50 @@ function StartPageContent() {
           </form>
         </div>
 
-         {/* 第二部分：建议问题列表 - 相对位置 */}
-         <div className="px-8 mt-12 max-h-[200px] overflow-hidden">
-           <div className="relative w-full">
-             <ul className="space-y-2 pr-16 w-full">
-               {suggestions.map((s, idx) => (
-                 <li key={idx}>
-                   <button
-                     type="button"
-                     onClick={() => setQuestion(s)}
-                     className="text-[14.5px] leading-[22px] text-white hover:underline text-left block w-full"
-                   >
-                     {s}
-                   </button>
-                 </li>
-               ))}
-             </ul>
+         {/* 第二部分：分类切换 */}
+         <div className="px-8 mt-10">
+           <div className="flex gap-3 overflow-x-auto pb-2">
+             {questionCategories[language]?.map((category) => {
+               const isActive = category.id === activeCategory;
+               return (
+                 <button
+                   key={category.id}
+                   type="button"
+                   onClick={() => handleCategoryChange(category.id)}
+                   className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 border ${
+                     isActive
+                       ? 'bg-white text-black border-white'
+                       : 'bg-white/10 text-white/70 border-white/30 hover:bg-white/20'
+                   }`}
+                   aria-pressed={isActive}
+                 >
+                   {category.label}
+                 </button>
+               );
+             })}
            </div>
          </div>
 
-         {/* 刷新按钮 - 固定在最上面 */}
+         {/* 第三部分：建议问题列表 - 相对位置 */}
+         <div className="px-8 mt-6 max-h-[220px] overflow-hidden">
+            <div className="relative w-full">
+              <ul className="space-y-2 pr-16 w-full">
+                {suggestions.map((s, idx) => (
+                  <li key={idx}>
+                    <button
+                      type="button"
+                      onClick={() => setQuestion(s)}
+                      className="text-[14.5px] leading-[22px] text-white hover:underline text-left block w-full"
+                    >
+                      {s}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* 刷新按钮 - 固定在最上面 */}
          <div className="fixed top-66 right-8 z-20">
            <button
              type="button"
