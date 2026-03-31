@@ -74,11 +74,8 @@ function StartPageContent() {
     return () => window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
   }, []);
 
-  const glowStyle = {
-    boxShadow: isFocused
-      ? '0 0 0 2px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.2), 0 0 60px rgba(59, 130, 246, 0.1)'
-      : '0 0 0 1px rgba(59, 130, 246, 0.3), 0 0 15px rgba(59, 130, 246, 0.2), 0 0 30px rgba(59, 130, 246, 0.15)'
-  };
+  const starSpeed = isFocused ? '4s' : '6s';
+  const starOpacity = isFocused ? 0.9 : 0.6;
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
@@ -166,36 +163,65 @@ function StartPageContent() {
                   {uiTexts[language].title}
                 </h2>
               </div>
-              <div className="relative w-full">
-                {/* glow */}
-                <div className="pointer-events-none absolute inset-0 rounded-[8px]" style={{ ...glowStyle, transition: 'box-shadow 180ms ease' }} />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={question}
-                  onChange={(e) => {
-                    setQuestion(e.target.value);
-                    if (error) setError(null);
+              <div className="relative w-full rounded-[16px] overflow-hidden bg-white/15" style={{ padding: '2px' }}>
+                {/* star border gradients */}
+                <div
+                  className="pointer-events-none absolute rounded-[50%]"
+                  style={{
+                    width: '300%',
+                    height: '50%',
+                    bottom: '-11px',
+                    right: '-250%',
+                    opacity: starOpacity,
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.9), transparent 6%)',
+                    animation: `star-move-bottom ${starSpeed} linear infinite alternate`,
+                    transition: 'opacity 300ms ease',
+                    zIndex: 0,
                   }}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  placeholder={uiTexts[language].placeholder}
-                  className="relative w-full bg-white rounded-[8px] border-2 border-blue-300 px-6 py-4 h-16 placeholder-gray-400 text-[16px] text-black focus:outline-none focus:ring-2 focus:ring-blue-300/20"
-                  aria-invalid={error ? 'true' : 'false'}
                 />
-                {question && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setQuestion('');
-                      inputRef.current?.focus();
+                <div
+                  className="pointer-events-none absolute rounded-[50%]"
+                  style={{
+                    width: '300%',
+                    height: '50%',
+                    top: '-11px',
+                    left: '-250%',
+                    opacity: starOpacity,
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.9), transparent 6%)',
+                    animation: `star-move-top ${starSpeed} linear infinite alternate`,
+                    transition: 'opacity 300ms ease',
+                    zIndex: 0,
+                  }}
+                />
+                <div className="relative z-[1]">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={question}
+                    onChange={(e) => {
+                      setQuestion(e.target.value);
+                      if (error) setError(null);
                     }}
-                    className="absolute top-1/2 -translate-y-1/2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded"
-                    aria-label="清空输入"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder={uiTexts[language].placeholder}
+                    className="w-full bg-black rounded-[14px] border border-white/10 px-6 py-4 h-16 placeholder-gray-500 text-[16px] text-white focus:outline-none"
+                    aria-invalid={error ? 'true' : 'false'}
+                  />
+                  {question && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuestion('');
+                        inputRef.current?.focus();
+                      }}
+                      className="absolute top-1/2 -translate-y-1/2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded"
+                      aria-label="清空输入"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
               {error && (
                 <p className="mt-2 text-sm text-red-600" role="alert">{error}</p>
@@ -267,7 +293,7 @@ function StartPageContent() {
             form="question-form"
             type="submit"
             disabled={isLoading || !question.trim()}
-            className={`w-full h-[56px] rounded-[8px] bg-black text-white text-[15.5px] font-medium border border-white transition active:opacity-90 disabled:opacity-40 disabled:text-white`}
+            className={`w-full h-[56px] rounded-[8px] bg-black text-white text-[17px] font-medium border border-white transition active:opacity-90 disabled:opacity-40 disabled:text-white`}
           >
             {uiTexts[language].submit}
           </button>

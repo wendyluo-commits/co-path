@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 interface ScrollHintProps {
   className?: string;
-  /** Auto-dismiss timeout in ms (default 6000) */
-  timeout?: number;
 }
 
 function findScrollParent(el: HTMLElement | null): HTMLElement | null {
@@ -20,41 +18,75 @@ function findScrollParent(el: HTMLElement | null): HTMLElement | null {
   return null;
 }
 
-export function ScrollHint({ className = '', timeout = 6000 }: ScrollHintProps) {
+const CHEVRON_COUNT = 3;
+const STAGGER = 0.28;
+const CYCLE = 1.6;
+
+function FlowChevron({ index }: { index: number }) {
+  const delay = index * STAGGER;
+
+  return (
+    <motion.div
+      animate={{
+        y: [0, 7, 0],
+        opacity: [0.18, 0.85, 0.18],
+      }}
+      transition={{
+        duration: CYCLE,
+        repeat: Infinity,
+        ease: 'easeInOut',
+        delay,
+        repeatDelay: 0,
+      }}
+      style={{ lineHeight: 0 }}
+    >
+      <ChevronDown size={50} strokeWidth={1.2} className="text-white" />
+    </motion.div>
+  );
+}
+
+export function ScrollHint({ className = '', timeout = 8000 }: ScrollHintProps) {
   const [visible, setVisible] = useState(true);
   const sentinelRef = useRef<HTMLSpanElement>(null);
-
-  const dismiss = useCallback(() => setVisible(false), []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
-    const scrollContainer = findScrollParent(sentinel);
+    let cleanupFn: (() => void) | undefined;
 
-    const handleScroll = () => {
-      if (scrollContainer) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-        const nearBottom = scrollTop + clientHeight >= scrollHeight - 80;
-        if (scrollTop > 60 || nearBottom) dismiss();
-      } else {
-        const scrollTop = window.scrollY;
-        const { scrollHeight, clientHeight } = document.documentElement;
-        const nearBottom = scrollTop + clientHeight >= scrollHeight - 80;
-        if (scrollTop > 60 || nearBottom) dismiss();
-      }
+    const setup = () => {
+      const scrollContainer = findScrollParent(sentinel);
+      const target: HTMLElement | Window = scrollContainer ?? window;
+
+      const handleScroll = () => {
+        if (scrollContainer) {
+          const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+          if (scrollHeight <= clientHeight + 50) return;
+          if (scrollTop > 80 || scrollTop + clientHeight >= scrollHeight - 80) {
+            setVisible(false);
+          }
+        } else {
+          const scrollTop = window.scrollY;
+          const { scrollHeight, clientHeight } = document.documentElement;
+          if (scrollHeight <= clientHeight + 50) return;
+          if (scrollTop > 80 || scrollTop + clientHeight >= scrollHeight - 80) {
+            setVisible(false);
+          }
+        }
+      };
+
+      target.addEventListener('scroll', handleScroll, { passive: true });
+      cleanupFn = () => target.removeEventListener('scroll', handleScroll);
     };
 
-    const target = scrollContainer ?? window;
-    target.addEventListener('scroll', handleScroll, { passive: true });
-
-    const timer = setTimeout(dismiss, timeout);
+    const initTimer = setTimeout(setup, 500);
 
     return () => {
-      target.removeEventListener('scroll', handleScroll);
-      clearTimeout(timer);
+      clearTimeout(initTimer);
+      cleanupFn?.();
     };
-  }, [dismiss, timeout]);
+  }, []);
 
   return (
     <>
@@ -62,23 +94,15 @@ export function ScrollHint({ className = '', timeout = 6000 }: ScrollHintProps) 
       <AnimatePresence>
         {visible && (
           <motion.div
-            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none ${className}`}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8, transition: { duration: 0.4 } }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-0 ${className}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.6 } }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <div className="flex flex-col items-center gap-0.5 px-5 py-2 rounded-full bg-black/45 backdrop-blur-md border border-white/15 shadow-lg">
-              <span className="text-white/90 text-xs font-medium tracking-wide">
-                向下滑动查看更多
-              </span>
-              <motion.div
-                animate={{ y: [0, 4, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <ChevronDown size={14} className="text-white/70" />
-              </motion.div>
-            </div>
+            {Array.from({ length: CHEVRON_COUNT }, (_, i) => (
+              <FlowChevron key={i} index={i} />
+            ))}
           </motion.div>
         )}
       </AnimatePresence>

@@ -94,7 +94,7 @@ export const MixedTarotReadingSchema = z.object({
   safety_note: z.string()
 });
 
-// OpenAI Structured Outputs 的 JSON Schema - 混合格式
+// Structured Outputs 的 JSON Schema - 混合格式
 export const TarotReadingJSONSchema = {
   type: "object",
   properties: {

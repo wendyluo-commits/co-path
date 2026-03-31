@@ -5,7 +5,7 @@
 ### 1. 准备工作
 
 确保您已经：
-- 拥有 OpenAI API Key
+- 拥有 Kimi API Key
 - 项目代码已推送到 Git 仓库（GitHub、GitLab 或 Bitbucket）
 - 拥有 Vercel 账户
 
@@ -31,22 +31,25 @@
 
    **Production 环境：**
    ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   MODEL_NAME=gpt-4o
+   KIMI_API_KEY=your_kimi_api_key_here
+   KIMI_BASE_URL=https://api.moonshot.ai/v1
+   KIMI_MODEL_NAME=kimi-k2.5
    NEXT_PUBLIC_APP_NAME=AI塔罗解读
    ```
 
    **Preview 环境（可选）：**
    ```
-   OPENAI_API_KEY=your_preview_openai_api_key_here
-   MODEL_NAME=gpt-4o
+   KIMI_API_KEY=your_preview_kimi_api_key_here
+   KIMI_BASE_URL=https://api.moonshot.ai/v1
+   KIMI_MODEL_NAME=kimi-k2.5
    NEXT_PUBLIC_APP_NAME=AI塔罗解读 (Preview)
    ```
 
    **Development 环境（可选）：**
    ```
-   OPENAI_API_KEY=your_dev_openai_api_key_here
-   MODEL_NAME=gpt-4o
+   KIMI_API_KEY=your_dev_kimi_api_key_here
+   KIMI_BASE_URL=https://api.moonshot.ai/v1
+   KIMI_MODEL_NAME=kimi-k2.5
    NEXT_PUBLIC_APP_NAME=AI塔罗解读 (Dev)
    ```
 
@@ -97,7 +100,7 @@ npm install
 
 # 配置环境变量
 cp .env.example .env.local
-# 编辑 .env.local 添加 OpenAI API Key
+# 编辑 .env.local 添加 Kimi API Key
 
 # 启动开发服务器
 npm run dev
@@ -109,13 +112,13 @@ npm run dev
 
 ### 构建失败
 
-**问题**: OpenAI API Key 相关错误
-**解决**: 确保在 Vercel 环境变量中正确设置了 `OPENAI_API_KEY`
+**问题**: Kimi API Key 相关错误
+**解决**: 确保在 Vercel 环境变量中正确设置了 `KIMI_API_KEY`
 
 ### 运行时错误
 
 **问题**: API 请求失败
-**解决**: 检查 OpenAI API Key 是否有效，余额是否充足
+**解决**: 检查 Kimi API Key 是否有效，余额是否充足
 
 **问题**: 解读生成失败
 **解决**: 查看 Vercel Function 日志，检查具体错误信息
@@ -124,14 +127,14 @@ npm run dev
 
 **问题**: API 响应慢
 **解决**: 
-- 检查 OpenAI API 状态
+- 检查 Kimi API 状态
 - 考虑优化提示词长度
 - 检查网络连接
 
 ## 📊 成本估算
 
 - **Vercel**: Hobby 计划免费，Pro 计划 $20/月
-- **OpenAI API**: 按使用量计费，GPT-4o 约 $0.0025/1K tokens
+- **Kimi API**: 按使用量计费（具体价格以官方为准）
 - **域名**: 可选，约 $10-15/年
 
 ## 🔒 安全建议

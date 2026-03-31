@@ -374,3 +374,13 @@ body {
   /* 不在 CSS 中缩放，避免与 JS 视差缩放叠加 */
   transform: none;
 }
+
+@keyframes star-move-bottom {
+  0%   { transform: translateX(0%);   opacity: 1; }
+  100% { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes star-move-top {
+  0%   { transform: translateX(0%);   opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}

@@ -23,6 +23,7 @@
     "deck-of-cards": "^0.1.8",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.540.0",
     "next": "^16.2.6",
     "openai": "^5.13.1",

@@ -120,11 +120,16 @@ function LoadingPageContent() {
     return () => clearInterval(interval);
   }, []);
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
     if (!fromRitual) {
       router.push('/reading');
       return;
     }
+
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
     // 调用API进行塔罗牌解读
     const performReading = async () => {

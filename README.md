@@ -1,10 +1,10 @@
 # AI 塔罗解读 Web 应用
 
-基于 Next.js 和 OpenAI 的 AI 驱动塔罗牌解读服务，提供单张牌和三张牌解读功能。
+基于 Next.js 和 Kimi（Moonshot）的 AI 驱动塔罗牌解读服务，提供单张牌和三张牌解读功能。
 
 ## 🌟 特性
 
-- **AI 驱动解读**: 使用 OpenAI GPT-4o 和 Structured Outputs 确保高质量、结构化的解读结果
+- **AI 驱动解读**: 使用 Kimi（Moonshot）和 Structured Outputs 确保高质量、结构化的解读结果
 - **多种牌阵**: 支持单张牌快速洞察和三张牌（过去-现在-未来）全面解读
 - **个性化体验**: 可选择温和或直接的解读语气
 - **安全边界**: 内置安全检测，对敏感话题提供适当的边界提示
@@ -16,7 +16,7 @@
 - **框架**: Next.js 14 (App Router)
 - **语言**: TypeScript
 - **样式**: Tailwind CSS
-- **AI 模型**: OpenAI GPT-4o
+- **AI 模型**: Kimi（Moonshot）kimi-k2.5
 - **验证**: Zod
 - **部署**: Vercel
 - **图标**: Lucide React
@@ -27,7 +27,7 @@
 
 - Node.js 18+
 - npm 或 yarn
-- OpenAI API Key
+- Kimi API Key
 
 ### 安装步骤
 
@@ -49,8 +49,9 @@
    
    编辑 `.env.local` 文件，添加必要的环境变量：
    ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   MODEL_NAME=gpt-4o
+   KIMI_API_KEY=your_kimi_api_key_here
+   KIMI_BASE_URL=https://api.moonshot.ai/v1
+   KIMI_MODEL_NAME=kimi-k2.5
    NEXT_PUBLIC_APP_NAME=AI塔罗解读
    ```
 
@@ -76,7 +77,7 @@ src/
 │   └── page.tsx           # 主页
 ├── components/            # 可复用组件
 ├── lib/                   # 工具库
-│   ├── openai.ts         # OpenAI 客户端
+│   ├── openai.ts         # LLM 客户端（Kimi/OpenAI-compatible）
 │   └── tarot.ts          # 塔罗牌逻辑
 ├── data/                  # 静态数据
 │   └── tarot-cards.json  # 塔罗牌知识库
@@ -145,8 +146,9 @@ src/
 
 2. **配置环境变量**
    在 Vercel 项目设置中添加环境变量：
-   - `OPENAI_API_KEY`
-   - `MODEL_NAME`
+   - `KIMI_API_KEY`
+   - `KIMI_BASE_URL`
+   - `KIMI_MODEL_NAME`
    - `NEXT_PUBLIC_APP_NAME`
 
 3. **部署**

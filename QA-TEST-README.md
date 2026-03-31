@@ -92,7 +92,7 @@ curl http://localhost:3000/api/health
 
 #### 2. 测试失败：解读内容包含中文
 - 检查语言参数是否正确传递
-- 检查OpenAI prompt是否正确
+- 检查Kimi prompt是否正确
 - 检查API路由语言处理
 
 #### 3. 测试失败：Playwright依赖问题
@@ -115,7 +115,7 @@ console.log('调试信息:', data);
 # 查看浏览器控制台日志
 # Loading页面发送的语言参数: en
 # API路由接收到的语言参数: en
-# OpenAI函数接收到的语言参数: en
+# Kimi函数接收到的语言参数: en
 ```
 
 ## 持续集成
