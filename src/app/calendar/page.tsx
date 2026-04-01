@@ -1,300 +1,275 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getReadingHistory, ReadingHistoryItem } from '@/lib/history';
 
+const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+
+function generateMonthDays(year: number, month: number): (Date | null)[] {
+  const firstDay = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfWeek = firstDay.getDay();
+  const mondayOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+  const days: (Date | null)[] = new Array(mondayOffset).fill(null);
+  for (let day = 1; day <= daysInMonth; day++) {
+    days.push(new Date(year, month, day));
+  }
+  return days;
+}
+
+// --- Memoized DayCell to avoid re-rendering all ~480 cells on selection change ---
+
+interface DayCellProps {
+  date: Date;
+  day: number;
+  dateStr: string;
+  hasReading: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  yearLabel: number;
+  monthLabel: number;
+  onSelect: (date: Date) => void;
+}
+
+const DayCell = memo(function DayCell({
+  date, day, hasReading, isToday, isSelected, yearLabel, monthLabel, onSelect,
+}: DayCellProps) {
+  return (
+    <button
+      onClick={() => onSelect(date)}
+      aria-label={`${yearLabel}年${monthLabel}月${day}日`}
+      aria-current={isToday ? 'date' : undefined}
+      className="flex flex-col items-center justify-start transition-colors duration-150"
+    >
+      <div
+        className={`h-8 w-8 flex items-center justify-center text-sm font-medium rounded-full ${
+          isSelected
+            ? 'bg-black text-white'
+            : isToday
+              ? 'text-black border border-black/60'
+              : 'text-black hover:bg-gray-100'
+        }`}
+      >
+        {day}
+      </div>
+
+      {hasReading && (
+        <div className="mt-1 w-1 h-1 rounded-full bg-gray-400" />
+      )}
+    </button>
+  );
+});
+
+// --- Main page component ---
+
 export default function CalendarPage() {
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [history, setHistory] = useState<ReadingHistoryItem[]>([]);
-  const [displayYear, setDisplayYear] = useState(2025);
+  const [displayYear, setDisplayYear] = useState(() => new Date().getFullYear());
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // 星期缩写 - 英文
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const currentMonthRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const historyData = getReadingHistory();
-    setHistory(historyData);
+    setHistory(getReadingHistory());
   }, []);
 
-  // 监听滚动，更新显示的年份
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      
-      const container = containerRef.current;
-      const scrollTop = container.scrollTop;
-      const containerHeight = container.clientHeight;
-      
-      // 计算当前可见区域中心点
-      const centerY = scrollTop + containerHeight / 2;
-      
-      // 查找最接近中心点的月份
-      const monthElements = container.querySelectorAll('[data-year]');
-      let closestMonth = null;
-      let minDistance = Infinity;
-      
-      monthElements.forEach((element) => {
-        const rect = element.getBoundingClientRect();
-        const elementCenter = rect.top + rect.height / 2 - container.getBoundingClientRect().top;
-        const distance = Math.abs(elementCenter - centerY);
-        
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestMonth = element;
-        }
-      });
-      
-      if (closestMonth) {
-        const year = parseInt(closestMonth.getAttribute('data-year') || '2025');
-        setDisplayYear(year);
-      }
-    };
-
+  // Scroll to current month before paint, only within the scroll container
+  useLayoutEffect(() => {
     const container = containerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      // 初始调用一次
-      handleScroll();
-      
-      return () => {
-        container.removeEventListener('scroll', handleScroll);
-      };
+    const monthEl = currentMonthRef.current;
+    if (container && monthEl) {
+      const containerTop = container.getBoundingClientRect().top;
+      const monthTop = monthEl.getBoundingClientRect().top;
+      container.scrollTop += monthTop - containerTop;
     }
   }, []);
 
-  // 检查某天是否有读牌记录
-  const hasReadingOnDate = (date: Date) => {
-    return history.some(item => {
-      const itemDate = new Date(item.timestamp);
-      return itemDate.toDateString() === date.toDateString();
-    });
-  };
+  // IntersectionObserver on individual month cards to detect year in viewport center
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  // 选择日期
-  const selectDate = (date: Date) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const yr = Number((entry.target as HTMLElement).dataset.year);
+            if (!Number.isNaN(yr)) setDisplayYear(yr);
+          }
+        }
+      },
+      { root: container, rootMargin: '-45% 0px -45% 0px' },
+    );
+
+    const monthEls = container.querySelectorAll<HTMLElement>('[data-year]');
+    monthEls.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const todayStr = useMemo(() => new Date().toDateString(), []);
+
+  const selectedDateStr = useMemo(
+    () => selectedDate?.toDateString() ?? null,
+    [selectedDate],
+  );
+
+  const datesWithReadings = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of history) {
+      set.add(new Date(item.timestamp).toDateString());
+    }
+    return set;
+  }, [history]);
+
+  const selectDate = useCallback((date: Date) => {
     setSelectedDate(date);
-    // 将选择的日期存储到sessionStorage，供历史页面使用
-    sessionStorage.setItem('selectedCalendarDate', date.toISOString());
-    router.push('/history');
-  };
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    router.push(`/history?date=${y}-${m}-${d}`);
+  }, [router]);
 
-  // 检查是否是今天
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
-
-  // 检查是否是选中的日期
-  const isSelected = (date: Date) => {
-    return selectedDate && date.toDateString() === selectedDate.toDateString();
-  };
-
-  // 生成月份数据
-  const generateMonthData = (year: number, month: number) => {
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    
-    // 获取当月第一天是星期几（0=Sunday, 1=Monday...）
-    const firstDayOfWeek = firstDay.getDay();
-    // 转换为Monday=0的格式
-    const mondayFirstDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-    
-    const days: (Date | null)[] = [];
-    
-    // 添加上个月的空白日期
-    for (let i = 0; i < mondayFirstDay; i++) {
-      days.push(null);
-    }
-    
-    // 添加当月的日期
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(new Date(year, month, day));
-    }
-    
-    return days;
-  };
-
-  // 生成多个月份的日历数据
-  const generateMultipleMonths = () => {
-    const months = [];
+  const yearGroups = useMemo(() => {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth();
-    
-    // 生成更多月份，包括2026年
-    for (let i = 0; i < 15; i++) { // 生成15个月，确保包含2026年
-      const year = currentMonth + i > 11 ? currentYear + 1 : currentYear;
-      const month = (currentMonth + i) % 12;
-      months.push({
-        year,
-        month,
-        monthNumber: month + 1,
-        days: generateMonthData(year, month)
-      });
-    }
-    
-    return months;
-  };
+    const startYear = currentYear - 1;
+    const endYear = currentYear;
 
-  const monthsData = generateMultipleMonths();
+    const groups: {
+      year: number;
+      months: {
+        year: number;
+        month: number;
+        monthNumber: number;
+        isCurrent: boolean;
+        days: (Date | null)[];
+      }[];
+    }[] = [];
+
+    for (let yr = startYear; yr <= endYear; yr++) {
+      const months = [];
+      for (let mo = 0; mo < 12; mo++) {
+        months.push({
+          year: yr,
+          month: mo,
+          monthNumber: mo + 1,
+          isCurrent: yr === currentYear && mo === currentMonth,
+          days: generateMonthDays(yr, mo),
+        });
+      }
+      groups.push({ year: yr, months });
+    }
+    return groups;
+  }, []);
 
   return (
-    <div className="min-h-dvh" style={{ backgroundColor: '#F0F0F0' }}>
-      {/* 1. 固定导航栏 */}
-      <header 
-        className="sticky top-0 z-50 relative px-6 py-4 text-white"
-        style={{
-          backgroundImage: 'url(/history_background.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
+    <div
+      className="h-dvh bg-[#F0F0F0] flex flex-col overflow-hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
+      <header
+        className="shrink-0 px-6 py-4 text-white bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/history_background.png)' }}
       >
         <div className="flex items-center justify-between">
-          {/* 返回按钮 */}
-          <button 
+          <button
             onClick={() => router.push('/history')}
             className="p-2 -ml-2 rounded-lg transition-colors hover:bg-white/10"
             aria-label="返回"
           >
-            <img 
-              src="/white_arrow.png" 
-              alt="返回" 
-              className="h-6 w-6"
-            />
+            <img src="/white_arrow.png" alt="返回" className="h-6 w-6" />
           </button>
-          
-          {/* 标题 */}
-          <h1 
-            className="text-white"
-            style={{
-              fontFamily: 'Red Rose',
-              fontWeight: 'regular',
-              fontSize: '38px',
-              letterSpacing: '-0.24px',
-              color: '#FFFFFF'
-            }}
+
+          <h1
+            className="text-white tracking-tight"
+            style={{ fontFamily: 'Red Rose', fontWeight: 400, fontSize: '38px' }}
           >
             Calendar
           </h1>
-          
-          {/* 年份在右侧 */}
-          <span 
-            className="text-white/80"
-            style={{
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              fontSize: '20px',
-              fontWeight: '400'
-            }}
-          >
+
+          <span className="text-white/80 text-xl font-normal">
             {displayYear}
           </span>
         </div>
       </header>
 
-      {/* 2. 星期栏 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="flex justify-between px-4 py-3">
-          {weekDays.map((day) => (
-            <div 
-              key={day} 
-              className="flex-1 text-center text-sm font-medium text-black"
-              style={{
-                fontFamily: 'system-ui, -apple-system, sans-serif'
-              }}
-            >
+      <div className="shrink-0 bg-white border-b border-gray-200">
+        <div className="grid grid-cols-7 px-4 py-3">
+          {WEEK_DAYS.map((day) => (
+            <div key={day} className="text-center text-sm font-medium text-black">
               {day}
             </div>
           ))}
         </div>
       </div>
 
-      {/* 3. 月日历 */}
-      <div ref={containerRef} className="px-4 py-4 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto">
-        {monthsData.map((monthData, monthIndex) => (
-          <div key={`${monthData.year}-${monthData.month}`} className="space-y-4" data-year={monthData.year}>
-            {/* 日历网格 */}
-            <div className="bg-white rounded-lg p-4">
-              {/* 月份数字 - 占据第一行，与日期第一列的数字居中对齐 */}
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                <div className="h-8 flex items-center justify-center">
-                  <span 
-                    className="text-black"
-                    style={{
-                      fontFamily: 'Red Rose',
-                      fontSize: '36px',
-                      fontWeight: 'regular'
-                    }}
-                  >
-                    {monthData.monthNumber}
-                  </span>
-                </div>
-                <div className="h-8"></div>
-                <div className="h-8"></div>
-                <div className="h-8"></div>
-                <div className="h-8"></div>
-                <div className="h-8"></div>
-                <div className="h-8"></div>
-              </div>
-              
-              {/* 日期网格 - 从第二行开始 */}
-              <div className="grid grid-cols-7 gap-1">
-                {monthData.days.map((date, dayIndex) => {
-                if (!date) {
-                  return <div key={dayIndex} className="h-8" />;
-                }
-                
-                const day = date.getDate();
-                const hasReading = hasReadingOnDate(date);
-                const isTodayDate = isToday(date);
-                const isSelectedDate = isSelected(date);
-                const isCurrentMonth = date.getMonth() === new Date().getMonth();
-                
+      <div ref={containerRef} className="flex-1 overflow-y-auto overscroll-contain bg-[#F0F0F0] px-4 py-4 space-y-6">
+        {yearGroups.map((yearGroup) => (
+          <div key={yearGroup.year} data-yeargroup={yearGroup.year}>
+            <div
+              className="sticky top-0 z-10 py-2 px-1 mb-2"
+              style={{ backgroundColor: '#F0F0F0' }}
+            >
+              <span
+                className="text-black/80"
+                style={{ fontFamily: 'Red Rose', fontWeight: 400, fontSize: '20px' }}
+              >
+                {yearGroup.year}
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {yearGroup.months.map((monthData) => {
+                const dateKey = `${monthData.year}-${monthData.month}`;
                 return (
-                  <button
-                    key={dayIndex}
-                    onClick={() => selectDate(date)}
-                    className="relative transition-all duration-200 flex flex-col items-center justify-start"
+                  <div
+                    key={dateKey}
+                    ref={monthData.isCurrent ? currentMonthRef : undefined}
+                    data-year={monthData.year}
                   >
-                    {/* 日期数字容器 - 所有日期都在同一水平线上 */}
-                    <div 
-                      className={`
-                        h-8 w-8 flex items-center justify-center text-sm font-medium
-                        ${isSelectedDate 
-                          ? 'bg-black text-white rounded-full' // 选中：黑色圆形背景，白色数字
-                          : isTodayDate 
-                            ? 'bg-transparent text-black border border-black rounded-full' // 今天：透明背景，黑色数字，细黑边框
-                            : isCurrentMonth
-                              ? 'text-black hover:bg-gray-100 rounded-full' // 当前月：透明背景，黑色数字
-                              : 'text-gray-400' // 其他月：浅灰色数字
-                        }
-                      `}
-                      style={{
-                        fontFamily: 'system-ui, -apple-system, sans-serif',
-                        ...(isTodayDate ? { borderWidth: '0.8px' } : {})
-                      }}
-                    >
-                      {day}
-                    </div>
-                    
-                    {/* 读牌记录指示器 - 小圆点，位于日期数字下方 */}
-                    {hasReading && (
-                      <div className="mt-1">
-                        <div 
-                          className="w-1 h-1 rounded-full"
-                          style={{ backgroundColor: '#9CA3AF' }}
-                        />
+                    <div className="bg-white rounded-lg p-4">
+                      <div className="h-10 flex items-center mb-2">
+                        <span
+                          className="text-black w-[calc(100%/7)] text-center"
+                          style={{ fontFamily: 'Red Rose', fontWeight: 400, fontSize: '36px' }}
+                        >
+                          {monthData.monthNumber}
+                        </span>
                       </div>
-                    )}
-                  </button>
+
+                      <div className="grid grid-cols-7 gap-1">
+                        {monthData.days.map((date, dayIndex) => {
+                          if (!date) {
+                            return <div key={dayIndex} className="h-8" />;
+                          }
+
+                          const dateStr = date.toDateString();
+
+                          return (
+                            <DayCell
+                              key={dayIndex}
+                              date={date}
+                              day={date.getDate()}
+                              dateStr={dateStr}
+                              hasReading={datesWithReadings.has(dateStr)}
+                              isToday={dateStr === todayStr}
+                              isSelected={dateStr === selectedDateStr}
+                              yearLabel={monthData.year}
+                              monthLabel={monthData.monthNumber}
+                              onSelect={selectDate}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 );
-            })}
-              </div>
+              })}
             </div>
           </div>
         ))}
