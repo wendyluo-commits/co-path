@@ -74,14 +74,14 @@ export const uiTexts = {
   zh: {
     title: "我的疑问是",
     placeholder: "请输入您的问题...",
-    submit: "选好了",
+    submit: "进入抽牌画布",
     skip: "跳过",
     refresh: "刷新建议"
   },
   en: {
     title: "My question is",
     placeholder: "Enter your question...",
-    submit: "Ready",
+    submit: "Enter draw canvas",
     skip: "Skip",
     refresh: "Refresh suggestions"
   }

@@ -1,396 +1,129 @@
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import { TarotReadingJSONSchema } from '@/schemas/reading.schema';
 import { NEW_SYSTEM_PROMPT, NEW_SYSTEM_PROMPT_EN } from '@/prompts/reading';
 
-// 初始化 OpenAI 客户端
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
+export const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY || 'dummy-key-for-build',
 });
 
-// 模型配置
-export const MODEL_NAME = process.env.MODEL_NAME || 'gpt-4o';
+export const MODEL_NAME = process.env.MODEL_NAME || 'claude-haiku-4-5-20251001';
 
-/**
- * 使用 Structured Outputs 调用 OpenAI API
- */
-export async function generateTarotReading(
+// Shared tool definition — Claude returns the reading as a tool call input,
+// giving us the same structured-output guarantee as OpenAI's json_schema mode.
+const READING_TOOL: Anthropic.Tool = {
+  name: 'tarot_reading',
+  description: 'Return the complete tarot reading in structured JSON format.',
+  input_schema: TarotReadingJSONSchema as unknown as Anthropic.Tool['input_schema'],
+};
+
+async function callClaude(
   systemPrompt: string,
   userPrompt: string,
-  maxRetries: number = 2
-) {
+  maxRetries: number = 1
+): Promise<{ success: true; data: unknown; usage: Anthropic.Usage; attempt: number }
+         | { success: false; error: string; attempt: number }> {
   let lastError: Error | null = null;
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = await openai.chat.completions.create({
+      const response = await anthropic.messages.create({
         model: MODEL_NAME,
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user", 
-            content: userPrompt
-          }
-        ],
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "tarot_reading",
-            strict: true,
-            schema: TarotReadingJSONSchema
-          }
-        },
-        temperature: 0.7,
-        // GPT-5+ 等模型：仅支持 max_completion_tokens（勿使用旧参数名）
-        max_completion_tokens: 2000
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+        tools: [READING_TOOL],
+        tool_choice: { type: 'tool', name: 'tarot_reading' },
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in response');
+      const toolBlock = response.content.find(b => b.type === 'tool_use');
+      if (!toolBlock || toolBlock.type !== 'tool_use') {
+        throw new Error('No tool_use block in response');
       }
 
-      // 解析 JSON 响应
-      const parsedResponse = JSON.parse(content);
-      
       return {
         success: true,
-        data: parsedResponse,
+        data: toolBlock.input,
         usage: response.usage,
-        attempt: attempt + 1
+        attempt: attempt + 1,
       };
-      
     } catch (error) {
       lastError = error as Error;
-      console.error(`Attempt ${attempt + 1} failed:`, error);
-      
-      // 如果是最后一次尝试，抛出错误
-      if (attempt === maxRetries) {
-        break;
-      }
-      
-      // 等待一段时间后重试
-      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      const status = (error as any)?.status;
+      // Permanent errors — retrying won't help
+      if (status === 429 || status === 401 || status === 403) break;
+      if (attempt === maxRetries) break;
+      await new Promise(resolve => setTimeout(resolve, 800 * (attempt + 1)));
     }
   }
 
   return {
     success: false,
     error: lastError?.message || 'Unknown error',
-    attempt: maxRetries + 1
+    attempt: maxRetries + 1,
   };
 }
 
 /**
- * 流式生成（用于未来扩展）
- */
-export async function generateTarotReadingStream(
-  systemPrompt: string,
-  userPrompt: string
-) {
-  try {
-    const stream = await openai.chat.completions.create({
-      model: MODEL_NAME,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      stream: true,
-      temperature: 0.7,
-      max_completion_tokens: 2000
-    });
-
-    return stream;
-  } catch (error) {
-    console.error('Stream generation failed:', error);
-    throw error;
-  }
-}
-
-/**
- * 使用Custom GPT Agent进行塔罗解读
- * 基于您的"温暖严谨塔罗解读师"agent的配置
+ * 使用Custom Agent风格的提示词进行塔罗解读
  */
 export async function generateTarotReadingWithAgent(
   question: string,
   cardContext: string,
   lang: 'zh' | 'en' = 'zh',
-  maxRetries: number = 2
+  maxRetries: number = 1
 ) {
-  let lastError: Error | null = null;
-  console.log('OpenAI函数接收到的语言参数:', lang);
-  
-  // 基于您的Custom GPT Agent"温暖严谨塔罗解读师"的完整配置
-  const systemPrompt = lang === 'en' 
-    ? `# Warm and Rigorous Tarot Reader
-
-You are a professional tarot reader with the following characteristics:
-
-## Core Identity
-- A warm and rigorous tarot reader
-- Specialized in outputting strict JSON format for frontend rendering
-- Combining traditional tarot wisdom with modern psychological insights
-
-## Reading Style
-- **Warm Care**: Communicate with users in an understanding, supportive, and encouraging tone
-- **Rigorous Professional**: Based on traditional meanings and symbolic systems of tarot cards
-- **Practical Orientation**: Provide specific and actionable advice and action steps
-- **Positive Attitude**: Emphasize users' autonomy and ability to change
-- **Avoid Fatalism**: No absolute predictions, emphasize possibilities and choices
-
-## Reading Principles
-1. Each card is explained in combination with its positional meaning
-2. Transform abstract card meanings into specific life guidance
-3. Provide 3-5 actionable recommendations
-4. Identify potential risks and provide coping strategies
-5. Maintain neutral, respectful, and specific expression
-
-## Output Requirements
-- Must strictly follow JSON Schema format
-- Each card explanation at least 50 words
-- Each card advice at least 40 words
-- Overall summary at least 80 words
-- Include safety notes and disclaimers
-
-## Language Style
-- Use warm, understanding tone
-- Avoid overly mysterious or frightening expressions
-- Address users as "you" to maintain respect
-- Clear and concise language, easy to understand
-
-Please output results strictly according to JSON Schema format.`
-    : `# 温暖严谨塔罗解读师
-
-你是一位专业的塔罗解读师，具有以下特质：
-
-## 核心身份
-- 温暖而严谨的塔罗解读师
-- 专门输出严格JSON格式供前端渲染
-- 结合传统塔罗智慧与现代心理学洞察
-
-## 解读风格
-- **温暖关怀**：用理解、支持、鼓励的语气与用户交流
-- **严谨专业**：基于塔罗牌的传统含义和象征体系
-- **实用导向**：提供具体可行的建议和行动步骤
-- **积极正面**：强调用户的自主选择权和改变能力
-- **避免宿命论**：不做绝对化预测，强调可能性和选择
-
-## 解读原则
-1. 每张牌都结合其位置含义进行解释
-2. 将抽象的牌义转化为具体的生活指导
-3. 提供3-5个可执行的行动建议
-4. 识别潜在风险并给出应对策略
-5. 保持中性、尊重、具体的表达方式
-
-## 输出要求
-- 必须严格遵循JSON Schema格式
-- 每张卡的解释不少于50字
-- 每张卡的建议不少于40字
-- 整体总结不少于80字
-- 包含安全提示和免责声明
-
-## 语言风格
-- 使用温暖、理解的语调
-- 避免过于神秘或恐吓的表达
-- 用"您"称呼用户，保持尊重
-- 语言简洁明了，易于理解
-
-请严格按照JSON Schema格式输出结果。`;
+  const systemPrompt = lang === 'en'
+    ? `You are a warm and rigorous tarot reader. Combine traditional tarot wisdom with modern psychological insights. Use an understanding, supportive, and encouraging tone. Avoid fatalism — emphasize possibilities and choices. You must call the tarot_reading tool with the complete structured reading.`
+    : `你是一位温暖而严谨的塔罗解读师。结合传统塔罗智慧与现代心理学洞察。用理解、支持、鼓励的语气与用户交流。避免宿命论，强调可能性和选择。你必须调用 tarot_reading 工具返回完整的结构化解读。`;
 
   const userPrompt = lang === 'en'
-    ? `Please provide a tarot reading based on the following information:
+    ? `Please provide a tarot reading based on the following:\n\n## User Question\n${question}\n\n## Cards Drawn\n${cardContext}`
+    : `请根据以下信息进行塔罗解读：\n\n## 用户问题\n${question}\n\n## 抽到的牌\n${cardContext}`;
 
-## User Question
-${question}
-
-## Cards Drawn
-${cardContext}
-
-Please return the reading results in JSON format, including detailed explanations for each card, overall interpretation, and action recommendations.`
-    : `请根据以下信息进行塔罗解读：
-
-## 用户问题
-${question}
-
-## 抽到的牌
-${cardContext}
-
-请按照JSON格式返回解读结果，包含每张牌的详细解释、整体解读、行动建议等。`;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await openai.chat.completions.create({
-        model: MODEL_NAME,
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: userPrompt
-          }
-        ],
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "tarot_reading",
-            strict: true,
-            schema: TarotReadingJSONSchema
-          }
-        },
-        temperature: 0.7,
-        max_completion_tokens: 3000
-      });
-
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in response');
-      }
-
-      // 解析 JSON 响应
-      const parsedResponse = JSON.parse(content);
-      
-      return {
-        success: true,
-        data: parsedResponse,
-        usage: response.usage,
-        attempt: attempt + 1
-      };
-      
-    } catch (error) {
-      lastError = error as Error;
-      console.error(`Agent attempt ${attempt + 1} failed:`, error);
-      
-      // 如果是最后一次尝试，抛出错误
-      if (attempt === maxRetries) {
-        break;
-      }
-      
-      // 等待一段时间后重试
-      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-    }
-  }
-
-  return {
-    success: false,
-    error: lastError?.message || 'Unknown error',
-    attempt: maxRetries + 1
-  };
+  return callClaude(systemPrompt, userPrompt, maxRetries);
 }
 
 /**
- * 使用新的提示词和schema生成塔罗解读
+ * 使用新版提示词和schema生成塔罗解读
  */
 export async function generateNewTarotReading(
   question: string,
   cardContext: string,
   lang: 'zh' | 'en' = 'zh',
-  maxRetries: number = 2
+  maxRetries: number = 1
 ) {
-  let lastError: Error | null = null;
-  
   const systemPrompt = lang === 'en' ? NEW_SYSTEM_PROMPT_EN : NEW_SYSTEM_PROMPT;
 
   const userPrompt = lang === 'en'
-    ? `Please provide a tarot reading based on the following information:
+    ? `Please provide a tarot reading based on the following:\n\n## User Question\n${question}\n\n## Cards Drawn\n${cardContext}`
+    : `请根据以下信息进行塔罗解读：\n\n## 用户问题\n${question}\n\n## 抽到的牌\n${cardContext}`;
 
-## User Question
-${question}
-
-## Cards Drawn
-${cardContext}
-
-Please return the reading results in the new JSON format, including cards, readingResults, keyMessages and other fields.`
-    : `请根据以下信息进行塔罗解读：
-
-## 用户问题
-${question}
-
-## 抽到的牌
-${cardContext}
-
-请按照新的JSON格式返回解读结果，包含cards、readingResults、keyMessages等字段。`;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await openai.chat.completions.create({
-        model: MODEL_NAME,
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: userPrompt
-          }
-        ],
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "new_tarot_reading",
-            strict: true,
-            schema: TarotReadingJSONSchema
-          }
-        },
-        temperature: 0.7,
-        max_completion_tokens: 4000
-      });
-
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in response');
-      }
-
-      // 解析 JSON 响应
-      const parsedResponse = JSON.parse(content);
-      
-      return {
-        success: true,
-        data: parsedResponse,
-        usage: response.usage,
-        attempt: attempt + 1
-      };
-      
-    } catch (error) {
-      lastError = error as Error;
-      console.error(`New format attempt ${attempt + 1} failed:`, error);
-      
-      // 如果是最后一次尝试，抛出错误
-      if (attempt === maxRetries) {
-        break;
-      }
-      
-      // 等待一段时间后重试
-      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-    }
-  }
-
-  return {
-    success: false,
-    error: lastError?.message || 'Unknown error',
-    attempt: maxRetries + 1
-  };
+  return callClaude(systemPrompt, userPrompt, maxRetries);
 }
 
 /**
- * 检查 OpenAI API 连接状态
+ * 通用生成函数（供外部直接传入 system/user prompt 时使用）
+ */
+export async function generateTarotReading(
+  systemPrompt: string,
+  userPrompt: string,
+  maxRetries: number = 1
+) {
+  return callClaude(systemPrompt, userPrompt, maxRetries);
+}
+
+/**
+ * 检查 Claude API 连接状态
  */
 export async function checkOpenAIConnection(): Promise<boolean> {
   try {
-    await openai.models.list();
+    await anthropic.messages.create({
+      model: MODEL_NAME,
+      max_tokens: 5,
+      messages: [{ role: 'user', content: 'hi' }],
+    });
     return true;
-  } catch (error) {
-    console.error('OpenAI connection check failed:', error);
+  } catch {
     return false;
   }
 }

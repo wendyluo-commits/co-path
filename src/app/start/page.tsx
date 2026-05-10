@@ -126,9 +126,11 @@ function StartPageContent() {
 
       const params = new URLSearchParams({
         question: formData.question,
-        spread: formData.spread
+        spread: formData.spread,
+        autoshuffle: '1',
+        lang: language,
       });
-      router.push(`/ritual?${params.toString()}`);
+      router.push(`/canvas?${params.toString()}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : '发生未知错误');
     } finally {
@@ -272,7 +274,14 @@ function StartPageContent() {
           <div className="mt-3 flex justify-center">
             <button
               type="button"
-              onClick={() => router.push('/ritual?spread=' + encodeURIComponent(presetSpread))}
+              onClick={() =>
+                router.push(
+                  '/canvas?spread=' +
+                    encodeURIComponent(presetSpread) +
+                    '&autoshuffle=1' +
+                    '&lang=' + language
+                )
+              }
               className="text-[14px] text-white hover:text-gray-200 px-4 py-2"
               aria-label="跳过"
             >

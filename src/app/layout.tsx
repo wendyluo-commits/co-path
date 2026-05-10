@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh">
+    <html lang="zh" suppressHydrationWarning>
       <head>
         {/* Preload responsive variants */}
         <link
@@ -87,8 +87,8 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className="min-h-screen">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+        <main className="phone-shell">
           {children}
         </main>
       </body>

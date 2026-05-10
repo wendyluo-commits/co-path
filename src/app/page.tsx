@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import EmblaCarousel from '@/components/EmblaCarousel';
-import BottomNav from '@/components/BottomNav';
 
 const spreads = [
   { key: "single", title: "YES or NO", sub: "简单决策", img: "/card_spread_1.png" },
@@ -39,7 +38,7 @@ export default function HomePage() {
 
   return (
     <div className="h-dvh relative text-gray-900 overflow-hidden hero">
-      <div className="relative w-full max-w-[1440px] mx-auto min-h-dvh flex flex-col px-4 md:px-6 pb-24">
+      <div className="relative w-full max-w-[1440px] mx-auto min-h-dvh flex flex-col px-4 md:px-6">
         <header className="pt-safe pb-24 md:pb-28" style={{ paddingTop: '62px', paddingLeft: '12px', paddingRight: '8px' }}>
           <div className="flex items-center justify-between">
             <div className="block">
@@ -79,8 +78,8 @@ export default function HomePage() {
             </button>
           </div>
         </header>
-        <section className="py-4 md:py-6 h-[46vh] md:h-[52vh] lg:h-[560px]" style={{ marginTop: '20px' }}>
-          <div className="-mx-4 md:-mx-6">
+        <section className="py-4 h-[60vh]" style={{ marginTop: '20px' }}>
+          <div className="w-full">
             <EmblaCarousel
               slides={spreads}
               options={emblaOptions}
@@ -91,7 +90,6 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      <BottomNav />
     </div>
   );
 }

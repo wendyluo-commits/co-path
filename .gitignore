@@ -40,5 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# R history (not part of this project)
+.Rhistory
+
 # temporary session storage
 .sessions/

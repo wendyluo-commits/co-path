@@ -8,25 +8,11 @@ export default function BottomNav() {
 
   const navItems = [
     {
-      id: 'amulet',
-      label: 'Charm',
-      path: '/amulet',
-      iconOff: '/%E5%BE%A1%E5%AE%88_off.png',
-      iconOn: '/%E5%BE%A1%E5%AE%88_on.png',
-    },
-    {
       id: 'reading',
       label: 'Read',
       path: '/',
       iconOff: '/%E8%A7%A3%E8%AF%BB_off.png',
       iconOn: '/%E8%A7%A3%E8%AF%BB_on.png',
-    },
-    {
-      id: 'profile',
-      label: 'You',
-      path: '/profile',
-      iconOff: '/%E6%88%91_off.png',
-      iconOn: '/%E6%88%91_on.png',
     },
   ];
 
@@ -36,7 +22,8 @@ export default function BottomNav() {
       return pathname === '/' ||
              pathname === '/home' ||
              pathname.startsWith('/start') || 
-             pathname.startsWith('/ritual') || 
+             pathname.startsWith('/ritual') ||
+             pathname.startsWith('/canvas') ||
              pathname.startsWith('/draw') || 
              pathname.startsWith('/reading') ||
              pathname.startsWith('/daily') ||

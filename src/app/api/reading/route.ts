@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { question, spread, seed, tone, lang, cards: preselectedCards } = validationResult.data;
-    console.log('API路由接收到的语言参数:', lang);
     
     // 检查是否使用新格式（可以通过查询参数或请求体控制）
     const useNewFormat = body.useNewFormat === true;
@@ -77,22 +76,9 @@ export async function POST(request: NextRequest) {
     
     if (!result.success) {
       console.error('OpenAI API failed:', result.error);
-      const errorMessage = result.error ?? '';
-      
-      // 检查是否是API错误（配额超限、API Key错误等）
-      if (errorMessage.includes('quota') || errorMessage.includes('429') || 
-          errorMessage.includes('401') || errorMessage.includes('API key') ||
-          errorMessage.includes('Incorrect API key')) {
-        console.log('API error detected, using fallback readings:', result.error);
-        const fallbackReading = generateFallbackReading(question, question, lang);
-        return NextResponse.json(fallbackReading, { status: 200 });
-      }
-      
-      // 降级处理 - 返回基础模板响应
-      const fallbackReading = useNewFormat 
-        ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
-        : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
-      
+      // All failure paths return the same MixedTarotReading format so the reading page
+      // always receives a consistent structure regardless of the error type.
+      const fallbackReading = createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
       return NextResponse.json(fallbackReading, { status: 200 });
     }
 

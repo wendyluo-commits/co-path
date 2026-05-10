@@ -12,6 +12,7 @@ import { useCardPreview, Face } from '@/components/useCardPreview';
 import { CardDetailOverlay } from '@/components/CardDetailOverlay';
 import { saveReadingToHistory } from '@/lib/history';
 import { ScrollHint } from '@/components/ScrollHint';
+import { FeedbackOverlay } from '@/components/FeedbackOverlay';
 
 function ReadingPageContent() {
   const router = useRouter();
@@ -20,6 +21,8 @@ function ReadingPageContent() {
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const spread = searchParams.get('spread') ?? undefined;
   const [language, setLanguage] = useState<'zh' | 'en'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('language') as 'zh' | 'en') || 'zh';
@@ -440,8 +443,9 @@ function ReadingPageContent() {
       const ritualParams = new URLSearchParams({
         spread: reading.spread,
         question: prefill,
+        autoshuffle: '1'
       });
-      router.push(`/ritual?${ritualParams.toString()}`);
+      router.push(`/canvas?${ritualParams.toString()}`);
       return;
     }
 
@@ -592,8 +596,8 @@ function ReadingPageContent() {
           background: none !important;
         }
       `}</style>
-      <div 
-        className="min-h-dvh flex flex-col relative"
+      <div
+        className="h-dvh flex flex-col relative"
         style={{
           backgroundImage: 'url(/bg4.png)',
           backgroundSize: 'cover',
@@ -630,9 +634,9 @@ function ReadingPageContent() {
           {/* Cards Row */}
           <div className="mt-4">
             {reading?.cards?.length === 5 ? (
-              // 5张牌的十字布局
-              <div className="flex flex-col items-center gap-4">
-                {/* 第一行：过去 */}
+              // 5张牌的十字布局 — 每张 80×120px，三排居中
+              <div className="flex flex-col items-center gap-3">
+                {/* 第一行：card[0] */}
                 <div className="flex justify-center">
                   {reading.cards[0] && (() => {
                     const card = reading.cards[0];
@@ -645,33 +649,24 @@ function ReadingPageContent() {
                     return (
                       <div key={0}
                         className="rounded border border-slate-300 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
-                        style={{ 
-                          width: 'clamp(120px,30vw,160px)', 
-                          height: 'calc(1.5 * clamp(120px,30vw,160px))' 
-                        }}
+                        style={{ width: 80, height: 120 }}
                         onClick={() => setOpenFace(face)}
                       >
-                        <motion.img 
+                        <motion.img
                           layoutId={`card-${face.id}`}
                           src={face.imageUrl}
                           alt={`${card.name} ${card.orientation === 'reversed' ? '逆位' : '正位'}`}
-                          className="w-full h-full object-contain rounded" 
-                          style={{
-                            rotate: card.orientation === 'reversed' ? 180 : 0,
-                            transformOrigin: '50% 50%'
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/tarot-cards/cardback.png';
-                          }}
+                          className="w-full h-full object-contain rounded"
+                          style={{ rotate: card.orientation === 'reversed' ? 180 : 0, transformOrigin: '50% 50%' }}
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/images/tarot-cards/cardback.png'; }}
                           draggable={false}
                         />
                       </div>
                     );
                   })()}
                 </div>
-                {/* 第二行：现在、未来、建议 */}
-                <div className="flex gap-4">
+                {/* 第二行：cards[1, 2, 3] */}
+                <div className="flex gap-3">
                   {reading.cards.slice(1, 4).map((card, index) => {
                     const face: Face = {
                       id: card.number || (index + 1),
@@ -682,32 +677,23 @@ function ReadingPageContent() {
                     return (
                       <div key={index + 1}
                         className="rounded border border-slate-300 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
-                        style={{ 
-                          width: 'clamp(120px,30vw,160px)', 
-                          height: 'calc(1.5 * clamp(120px,30vw,160px))' 
-                        }}
+                        style={{ width: 80, height: 120 }}
                         onClick={() => setOpenFace(face)}
                       >
-                        <motion.img 
+                        <motion.img
                           layoutId={`card-${face.id}`}
                           src={face.imageUrl}
                           alt={`${card.name} ${card.orientation === 'reversed' ? '逆位' : '正位'}`}
-                          className="w-full h-full object-contain rounded" 
-                          style={{
-                            rotate: card.orientation === 'reversed' ? 180 : 0,
-                            transformOrigin: '50% 50%'
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/tarot-cards/cardback.png';
-                          }}
+                          className="w-full h-full object-contain rounded"
+                          style={{ rotate: card.orientation === 'reversed' ? 180 : 0, transformOrigin: '50% 50%' }}
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/images/tarot-cards/cardback.png'; }}
                           draggable={false}
                         />
                       </div>
                     );
                   })}
                 </div>
-                {/* 第三行：结果 */}
+                {/* 第三行：card[4] */}
                 <div className="flex justify-center">
                   {reading.cards[4] && (() => {
                     const card = reading.cards[4];
@@ -720,25 +706,16 @@ function ReadingPageContent() {
                     return (
                       <div key={4}
                         className="rounded border border-slate-300 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
-                        style={{ 
-                          width: 'clamp(120px,30vw,160px)', 
-                          height: 'calc(1.5 * clamp(120px,30vw,160px))' 
-                        }}
+                        style={{ width: 80, height: 120 }}
                         onClick={() => setOpenFace(face)}
                       >
-                        <motion.img 
+                        <motion.img
                           layoutId={`card-${face.id}`}
                           src={face.imageUrl}
                           alt={`${card.name} ${card.orientation === 'reversed' ? '逆位' : '正位'}`}
-                          className="w-full h-full object-contain rounded" 
-                          style={{
-                            rotate: card.orientation === 'reversed' ? 180 : 0,
-                            transformOrigin: '50% 50%'
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/tarot-cards/cardback.png';
-                          }}
+                          className="w-full h-full object-contain rounded"
+                          style={{ rotate: card.orientation === 'reversed' ? 180 : 0, transformOrigin: '50% 50%' }}
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/images/tarot-cards/cardback.png'; }}
                           draggable={false}
                         />
                       </div>
@@ -791,86 +768,60 @@ function ReadingPageContent() {
 
           {/* Reading Results Title */}
           <div className="mt-8 mb-6">
-            <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
+            <h2 className="text-[13px] font-normal text-[#ABABAB] leading-[20px] tracking-wide">
               {uiTexts[language].readingResults}
             </h2>
           </div>
 
           {/* Reading Body */}
-          <article className="pb-[96px] space-y-4 text-[15px] leading-8 text-white">
+          <article className="pb-[96px] space-y-4 text-[13px] leading-6 text-white">
             {isNewFormat(reading) ? (
               // 新格式：显示 readingResults
               <>
                 {reading.readingResults?.map((result, index) => (
                   <div key={index}>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-lg text-white">
-                        {`{${result.heading}}`}
+                      <h3 className="font-semibold text-[13px] text-white">
+                        {result.heading}
                       </h3>
                       {result.body && (
-                        <p className="text-white leading-relaxed">{result.body}</p>
+                        <p className="text-white text-[13px] leading-6">{result.body}</p>
                       )}
                       {result.tip && (
-                        <div className="text-white text-sm leading-relaxed">
+                        <div className="text-white/75 text-[12px] leading-5 mt-2">
                           {(() => {
-                            const tipZh = result.tip.match(/^(.+?牌提示你——)\s*(.+)$/);
-                            const tipEn = result.tip.match(/^(.+?card\s+reminds\s+you\s+—)\s*(.+)$/i);
-
-                            if (tipEn && language === 'en') {
-                              const cardPrompt = tipEn[1].replace('reminds you —', 'reminds you —');
-                              const specificTip = tipEn[2];
+                            // Split on first newline — first line is the card prompt, rest is the tip
+                            const newlineIdx = result.tip.indexOf('\n');
+                            if (newlineIdx !== -1) {
+                              const label = result.tip.slice(0, newlineIdx).trim();
+                              const body  = result.tip.slice(newlineIdx + 1).trim();
                               return (
                                 <>
-                                  <p className="font-medium">{`{${cardPrompt}}`}</p>
-                                  <p className="mt-1">{specificTip}</p>
+                                  <p className="font-medium text-white/60">{label}</p>
+                                  {body && <p className="mt-1">{body}</p>}
                                 </>
                               );
                             }
-
-                            if (tipZh) {
-                              const cardPrompt = tipZh[1].replace('提示你——', '提示/提醒你 --');
-                              const specificTip = tipZh[2];
-                              return (
-                                <>
-                                  <p className="font-medium">{`{${cardPrompt}}`}</p>
-                                  <p className="mt-1">{specificTip}</p>
-                                </>
-                              );
-                            }
-
                             return <p>{result.tip}</p>;
                           })()}
                         </div>
                       )}
                     </div>
-                    {/* 每段解读之间的灰色分割线 */}
+                    {/* 段间分割 */}
                     {index < reading.readingResults.length - 1 && (
                       <div className="relative my-6">
-                        {/* 第一段和第二段之间的分割线添加Component 1 */}
+                        <div className="w-full h-px bg-white/10" />
                         {index === 0 && (
-                          <div 
+                          <div
                             className="absolute z-10"
-                            style={{
-                              right: '-8%',
-                              top: '-70%',
-                              transform: 'translateY(-60px)'
-                            }}
+                            style={{ right: '-8%', top: '-70%', transform: 'translateY(-60px)' }}
                           >
-                            <img 
-                              src="/component1.png" 
-                              alt="Component 1" 
-                              className="max-w-[100px] h-auto object-contain"
-                            />
+                            <img src="/component1.png" alt="" className="max-w-[100px] h-auto object-contain" />
                           </div>
                         )}
-                        {/* 第二段和第三段之间的分割线添加Component 3 */}
                         {index === 1 && (
                           <div className="absolute right-0 top-0 transform -translate-y-[44%] translate-x-6 z-10">
-                            <img 
-                              src="/component3.png" 
-                              alt="Component 3" 
-                              className="max-w-[310px] h-auto object-contain"
-                            />
+                            <img src="/component3.png" alt="" className="max-w-[310px] h-auto object-contain" />
                           </div>
                         )}
                       </div>
@@ -930,7 +881,7 @@ function ReadingPageContent() {
         {isNewFormat(reading) && reading.keyMessages && (
           <div className="max-w-[480px] mx-auto px-6">
             <div className="mt-6 mb-6">
-            <h2 className="text-[18px] font-normal text-[#ABABAB] leading-[27px] tracking-wide">
+            <h2 className="text-[13px] font-normal text-[#ABABAB] leading-[20px] tracking-wide">
               {uiTexts[language].keyMessages}
             </h2>
             </div>
@@ -941,11 +892,11 @@ function ReadingPageContent() {
         {isNewFormat(reading) && reading.keyMessages && (
           <div className="max-w-[480px] mx-auto px-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg text-white">
-                {`{${reading.keyMessages.title}}`}
+              <h3 className="font-semibold text-[13px] text-white">
+                {reading.keyMessages.title}
               </h3>
               {reading.keyMessages.body && (
-                <p className="text-white leading-relaxed">{reading.keyMessages.body}</p>
+                <p className="text-white text-[13px] leading-6">{reading.keyMessages.body}</p>
               )}
             </div>
           </div>
@@ -967,7 +918,7 @@ function ReadingPageContent() {
               {/* 继续询问：在「祝福」之前 */}
               <button
                 type="button"
-                className="w-full sm:w-1/2 mx-auto bg-white/10 text-white border border-white/50 rounded-full py-3 text-base font-semibold shadow-md hover:bg-white/20 transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full sm:w-1/2 mx-auto bg-white/10 text-white border border-white/50 rounded-full py-3 text-[13px] font-semibold shadow-md hover:bg-white/20 transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
                 onClick={() => {
                   setFollowUpMode('same_cards');
                   setShowFollowUpModal(true);
@@ -977,15 +928,10 @@ function ReadingPageContent() {
               </button>
               <button
                 type="button"
-                className="w-full sm:w-1/2 mx-auto bg-black text-white border border-white/70 rounded-full py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
-                onClick={() => {
-                  const blessingPages = ['/sword', '/wand', '/cup', '/coins'];
-                  const randomIndex = Math.floor(Math.random() * blessingPages.length);
-                  const randomPage = blessingPages[randomIndex];
-                  window.location.href = randomPage;
-                }}
+                className="w-full sm:w-1/2 mx-auto bg-black text-white border border-white/70 rounded-full py-3 text-[13px] font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
+                onClick={() => setShowFeedback(true)}
               >
-                {language === 'zh' ? '获取塔罗牌的祝福' : 'Receive Tarot Blessings'}
+                {language === 'zh' ? '结束解读' : 'End Reading'}
               </button>
             </div>
           </div>
@@ -1006,11 +952,20 @@ function ReadingPageContent() {
         </section>
       </main>
 
+      {/* Feedback overlay — shown on "结束解读", navigates home after done */}
+      {showFeedback && (
+        <FeedbackOverlay
+          spread={spread}
+          language={language}
+          onDone={() => router.push('/')}
+        />
+      )}
+
       {/* Card Detail Overlay */}
       {openFace && (
-        <CardDetailOverlay 
-          face={openFace} 
-          onClose={() => setOpenFace(null)} 
+        <CardDetailOverlay
+          face={openFace}
+          onClose={() => setOpenFace(null)}
         />
       )}
 

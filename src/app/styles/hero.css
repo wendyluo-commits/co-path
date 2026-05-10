@@ -1,12 +1,10 @@
 
 .hero {
-  /* New background image */
   background-image: url("/bg.png");
-
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover; /* fill container */
-  background-color: #f7f8fa; /* avoid flash */
+  background-size: cover;
+  background-color: #f7f8fa;
   min-height: 100vh;
 }
 
