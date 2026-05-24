@@ -1,26 +1,54 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { 
-  getReadingHistory, 
-  ReadingHistoryItem, 
-  formatTimestamp, 
+import {
+  getReadingHistory,
+  ReadingHistoryItem,
+  formatTimestamp,
   getSpreadEnglishName,
   getSpreadChineseName,
   getSpreadIconPath,
   filterReadingsByDateRange,
-  cleanDuplicateHistoryIfNeeded 
+  cleanDuplicateHistoryIfNeeded
 } from '@/lib/history';
 import { getCardImageByName, CARDBACK_PATH } from '@/lib/card-images';
+import { getFeedbackByReadingId, readingId, type FeedbackEntry } from '@/lib/feedback-storage';
 
-export default function HistoryPage() {
+function RatingStars({ rating }: { rating: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-[2px]"
+      title={`${rating} / 5`}
+      aria-label={`Rating ${rating} of 5`}
+    >
+      {[1, 2, 3, 4, 5].map((n) => (
+        <svg
+          key={n}
+          width="10"
+          height="10"
+          viewBox="0 0 14 14"
+          fill="none"
+          aria-hidden
+        >
+          <path
+            d="M7 0.5 L7.7 5.3 L12.5 7 L7.7 8.7 L7 13.5 L6.3 8.7 L1.5 7 L6.3 5.3 Z"
+            fill={n <= rating ? 'rgb(218, 165, 32)' : 'rgb(220, 220, 220)'}
+          />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+function HistoryPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [history, setHistory] = useState<ReadingHistoryItem[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<ReadingHistoryItem[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
+  const [feedbackMap, setFeedbackMap] = useState<Map<string, FeedbackEntry>>(new Map());
 
   const generateWeekDates = (date: Date) => {
     const week: Date[] = [];
@@ -48,6 +76,7 @@ export default function HistoryPage() {
     cleanDuplicateHistoryIfNeeded();
     const data = getReadingHistory();
     setHistory(data);
+    setFeedbackMap(getFeedbackByReadingId());
 
     const dateParam = searchParams.get('date');
     if (dateParam) {
@@ -305,7 +334,7 @@ export default function HistoryPage() {
                     </p>
                     
                     <div className="flex items-center gap-2">
-                      <span 
+                      <span
                         style={{
                           fontFamily: 'PingFang SC',
                           fontSize: '10px',
@@ -317,7 +346,11 @@ export default function HistoryPage() {
                       >
                         {formatTimestamp(item.timestamp)}
                       </span>
-                      <img 
+                      {(() => {
+                        const fb = feedbackMap.get(readingId(item.fullReading));
+                        return fb ? <RatingStars rating={fb.rating} /> : null;
+                      })()}
+                      <img
                         src="/black_arrow.png"
                         alt="arrow"
                         className="w-5 h-5"
@@ -354,5 +387,13 @@ export default function HistoryPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense fallback={null}>
+      <HistoryPageContent />
+    </Suspense>
   );
 }

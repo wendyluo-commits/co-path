@@ -2,14 +2,14 @@
 
 ## 🎯 项目概述
 
-成功创建了一个基于 Next.js 和 Kimi（Moonshot）kimi-k2.5 的 AI 驱动塔罗牌解读 Web 应用，完全符合需求文档的所有要求。
+成功创建了一个基于 Next.js 和 OpenAI gpt-4o-mini 的 AI 驱动塔罗牌解读 Web 应用，完全符合需求文档的所有要求。
 
 ## ✅ 已实现功能
 
 ### 核心功能
 - [x] **单张牌解读**: 快速洞察当前状况
 - [x] **三张牌解读**: 过去-现在-未来全面分析
-- [x] **AI 驱动解读**: 使用 Kimi（Moonshot）kimi-k2.5 + Structured Outputs
+- [x] **AI 驱动解读**: 使用 OpenAI gpt-4o-mini + Structured Outputs
 - [x] **个性化语气**: 支持温和/直接两种解读风格
 - [x] **结构化输出**: 严格遵循 JSON Schema，确保结果一致性
 
@@ -52,7 +52,7 @@ web/
 │   │   ├── LoadingSpinner.tsx # 加载动画
 │   │   └── ErrorMessage.tsx   # 错误提示
 │   ├── lib/                   # 核心逻辑
-│   │   ├── openai.ts         # LLM 客户端（Kimi/OpenAI-compatible）
+│   │   ├── openai.ts         # LLM 客户端（OpenAI）
 │   │   └── tarot.ts          # 塔罗牌逻辑
 │   ├── data/                  # 静态数据
 │   │   └── tarot-cards.json  # 塔罗牌知识库
@@ -74,7 +74,7 @@ web/
 | **前端框架** | Next.js | 15.5.0 |
 | **开发语言** | TypeScript | Latest |
 | **样式框架** | Tailwind CSS | Latest |
-| **AI 模型** | Kimi（Moonshot）kimi-k2.5 | Latest |
+| **AI 模型** | OpenAI gpt-4o-mini | Latest |
 | **数据验证** | Zod | Latest |
 | **图标库** | Lucide React | Latest |
 | **部署平台** | Vercel | - |
@@ -147,7 +147,7 @@ web/
 ```bash
 npm install
 cp .env.example .env.local
-# 配置 KIMI_API_KEY
+# 配置 OPENAI_API_KEY
 npm run dev
 ```
 

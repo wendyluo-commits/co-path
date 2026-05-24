@@ -1,170 +1,80 @@
-# 部署指南
+# Deployment Guide
 
-## 🚀 Vercel 部署步骤
+## Vercel
 
-### 1. 准备工作
+### Prerequisites
 
-确保您已经：
-- 拥有 Kimi API Key
-- 项目代码已推送到 Git 仓库（GitHub、GitLab 或 Bitbucket）
-- 拥有 Vercel 账户
+- OpenAI API key (https://platform.openai.com/api-keys)
+- 32+ char `SESSION_SECRET` — generate with: `openssl rand -hex 32`
+- Code pushed to GitHub / GitLab / Bitbucket
+- Vercel account
 
-### 2. 部署步骤
+### Steps
 
-1. **登录 Vercel 控制台**
-   - 访问 [vercel.com](https://vercel.com)
-   - 使用 GitHub/GitLab/Bitbucket 账户登录
+1. **Import project** in Vercel: New Project → pick the repo.
 
-2. **导入项目**
-   - 点击 "New Project"
-   - 选择您的 Git 仓库
-   - 选择包含 Next.js 项目的目录（如果是 monorepo）
-
-3. **配置项目**
-   - Framework Preset: Next.js
-   - Root Directory: `web`（如果项目在子目录中）
+2. **Settings** (Vercel auto-detects most of these for Next.js):
+   - Framework Preset: `Next.js`
    - Build Command: `npm run build`
    - Output Directory: `.next`
 
-4. **设置环境变量**
-   在 Vercel 项目设置中添加以下环境变量：
+3. **Environment Variables** (Project Settings → Environment Variables):
 
-   **Production 环境：**
-   ```
-   KIMI_API_KEY=your_kimi_api_key_here
-   KIMI_BASE_URL=https://api.moonshot.ai/v1
-   KIMI_MODEL_NAME=kimi-k2.5
-   NEXT_PUBLIC_APP_NAME=AI塔罗解读
-   ```
+   | Name | Required | Notes |
+   |---|---|---|
+   | `OPENAI_API_KEY` | yes | Your OpenAI key |
+   | `SESSION_SECRET` | yes | `openssl rand -hex 32` — used to HMAC-sign fair-shuffle session tokens. The server throws on startup if this is missing in production. |
+   | `RESEND_API_KEY` | no | If set with `FEEDBACK_EMAIL_TO`, each user feedback submission is emailed to you. Sign up at https://resend.com (free tier: 100 emails/day). |
+   | `FEEDBACK_EMAIL_TO` | no | Your email — destination for feedback emails. Required alongside `RESEND_API_KEY`. |
+   | `FEEDBACK_EMAIL_FROM` | no | Defaults to `feedback@resend.dev` which works without verifying a custom domain. |
+   | `MODEL_NAME` | no | Defaults to `gpt-4o-mini`. |
+   | `NEXT_PUBLIC_APP_NAME` | no | Display name in the UI. |
 
-   **Preview 环境（可选）：**
-   ```
-   KIMI_API_KEY=your_preview_kimi_api_key_here
-   KIMI_BASE_URL=https://api.moonshot.ai/v1
-   KIMI_MODEL_NAME=kimi-k2.5
-   NEXT_PUBLIC_APP_NAME=AI塔罗解读 (Preview)
-   ```
+   Set these for the **Production** environment. Optionally repeat for Preview / Development environments with separate keys.
 
-   **Development 环境（可选）：**
-   ```
-   KIMI_API_KEY=your_dev_kimi_api_key_here
-   KIMI_BASE_URL=https://api.moonshot.ai/v1
-   KIMI_MODEL_NAME=kimi-k2.5
-   NEXT_PUBLIC_APP_NAME=AI塔罗解读 (Dev)
-   ```
+4. **Deploy.** Build typically completes in 1–2 minutes.
 
-5. **部署**
-   - 点击 "Deploy"
-   - 等待构建完成（通常 1-2 分钟）
+### Verify
 
-### 3. 验证部署
+- Home page: `https://<your-domain>.vercel.app/` loads.
+- Health: `https://<your-domain>.vercel.app/api/health` → `{ ok: true, services: { openai: { status: "healthy" } } }` (will be `ok: false` if the OPENAI_API_KEY is missing or invalid).
+- Try a reading end-to-end.
 
-部署完成后：
+### Custom domain
 
-1. **检查主页**
-   - 访问分配的域名
-   - 确保页面正常加载
+Vercel project → Domains → Add. Follow the DNS instructions.
 
-2. **测试健康检查**
-   - 访问 `https://your-domain.vercel.app/api/health`
-   - 应该返回服务状态信息
+## Function configuration
 
-3. **测试核心功能**
-   - 输入测试问题
-   - 选择牌阵类型
-   - 提交并检查是否能正常生成解读
+`vercel.json` sets `/api/**` function `maxDuration` to 30s. OpenAI calls retry once internally (`src/lib/openai.ts`), so allow that headroom.
 
-### 4. 自定义域名（可选）
+## Rate limiting in production
 
-1. 在 Vercel 项目设置中点击 "Domains"
-2. 添加您的自定义域名
-3. 按照提示配置 DNS 记录
+The in-memory rate limiter (`src/lib/rate-limit.ts`) is per-serverless-instance, so a determined attacker can hit you N × instances. It defends against the common case (one IP spamming from a script). For strict global limits, swap the `buckets` Map for Upstash / Vercel KV — the `getClientIp` + `rateLimit` interface stays the same.
 
-### 5. 监控和维护
+## Cost protection
 
-- **查看部署日志**: Vercel 控制台 → Functions → View Function Logs
-- **监控使用情况**: Vercel Analytics
-- **设置告警**: Vercel 集成或第三方监控服务
+- `/api/reading`: 5/min, 30/hour per IP.
+- `/api/draw` and `/api/session`: 30/min per IP.
 
-## 🔧 本地开发
+Adjust in `src/lib/rate-limit.ts` call sites if you need different ceilings.
 
-如需本地开发和测试：
+## Security headers
 
-```bash
-# 克隆项目
-git clone <your-repo-url>
-cd web
+Set in `vercel.json` for all routes:
 
-# 安装依赖
-npm install
+- `Strict-Transport-Security` (HSTS, 2-year max-age)
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(self), microphone=(), geolocation=()` — camera is `self` because the gesture-drawing canvas uses MediaPipe.
 
-# 配置环境变量
-cp .env.example .env.local
-# 编辑 .env.local 添加 Kimi API Key
+## Dev-only routes
 
-# 启动开发服务器
-npm run dev
+`/debug`, `/reset-quota`, `/test-api`, `/test-images`, `/test-pt` 404 in production via `src/proxy.ts`. They remain accessible in `next dev`.
 
-# 访问 http://localhost:3000
-```
+## Troubleshooting
 
-## 🐛 常见问题
-
-### 构建失败
-
-**问题**: Kimi API Key 相关错误
-**解决**: 确保在 Vercel 环境变量中正确设置了 `KIMI_API_KEY`
-
-### 运行时错误
-
-**问题**: API 请求失败
-**解决**: 检查 Kimi API Key 是否有效，余额是否充足
-
-**问题**: 解读生成失败
-**解决**: 查看 Vercel Function 日志，检查具体错误信息
-
-### 性能问题
-
-**问题**: API 响应慢
-**解决**: 
-- 检查 Kimi API 状态
-- 考虑优化提示词长度
-- 检查网络连接
-
-## 📊 成本估算
-
-- **Vercel**: Hobby 计划免费，Pro 计划 $20/月
-- **Kimi API**: 按使用量计费（具体价格以官方为准）
-- **域名**: 可选，约 $10-15/年
-
-## 🔒 安全建议
-
-1. **API Key 安全**
-   - 不要在代码中硬编码 API Key
-   - 定期轮换 API Key
-   - 监控 API 使用量
-
-2. **访问控制**
-   - 考虑添加速率限制
-   - 监控异常访问模式
-
-3. **数据保护**
-   - 确保用户问题不被记录
-   - 遵循数据保护法规
-
-## 📈 扩展建议
-
-1. **功能增强**
-   - 添加更多牌阵类型
-   - 支持多语言
-   - 添加用户账户系统
-
-2. **技术优化**
-   - 添加缓存机制
-   - 实现流式响应
-   - 集成分析工具
-
-3. **商业化**
-   - 集成 Stripe 支付
-   - 添加订阅功能
-   - 实现使用次数限制
+- **Health returns 503** — `OPENAI_API_KEY` env var is unset or invalid.
+- **Server throws on startup with "SESSION_SECRET env var is required"** — set `SESSION_SECRET` in Vercel project env vars.
+- **Cards never draw / "Session not found"** — token expired (1 hour TTL) or `SESSION_SECRET` changed between session creation and draw.

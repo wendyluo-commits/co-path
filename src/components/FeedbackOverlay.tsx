@@ -1,10 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { saveFeedback } from '@/lib/feedback-storage';
 
 interface Props {
   spread?:  string;
   language: 'zh' | 'en';
+  readingId: string;
   onDone:   () => void;
 }
 
@@ -70,7 +72,7 @@ function Rule({ dim }: { dim?: boolean }) {
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function FeedbackOverlay({ spread, language, onDone }: Props) {
+export function FeedbackOverlay({ spread, language, readingId, onDone }: Props) {
   const t = T[language];
 
   const [rating,    setRating]    = useState(0);
@@ -88,6 +90,18 @@ export function FeedbackOverlay({ spread, language, onDone }: Props) {
   const handleSubmit = async () => {
     if (rating === 0) return;
     setLoading(true);
+
+    // Save locally first — that's the source of truth and always succeeds.
+    saveFeedback({
+      readingId,
+      rating,
+      comment: comment || undefined,
+      spread,
+      improvementAreas: areas.length ? areas : undefined,
+      submittedAt: Date.now(),
+    });
+
+    // Best-effort remote write; aborts/failures don't block the thank-you screen.
     try {
       await fetch('/api/feedback', {
         method:  'POST',
@@ -97,10 +111,11 @@ export function FeedbackOverlay({ spread, language, onDone }: Props) {
           comment,
           spread,
           improvementAreas: areas.length ? areas.join(', ') : undefined,
+          readingId,
         }),
       });
     } catch {
-      // fail silently — don't block the user
+      // localStorage already has it — silent ok
     }
     setSubmitted(true);
     setTimeout(onDone, 1200);
