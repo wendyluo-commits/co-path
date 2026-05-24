@@ -78,7 +78,7 @@ export function generateFallbackReading(userPrompt: string, question?: string, p
   const fallbackData = isEnglish ? FALLBACK_READINGS.en : FALLBACK_READINGS.zh;
   const cards = Object.keys(fallbackData);
   const randomCard = cards[Math.floor(Math.random() * cards.length)];
-  const cardData = fallbackData[randomCard];
+  const cardData = (fallbackData as Record<string, { meaning: string; interpretation: string }>)[randomCard];
   
   // 根据问题类型生成更相关的解读
   const questionText = question || userPrompt;

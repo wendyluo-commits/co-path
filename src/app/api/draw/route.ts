@@ -1,26 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { 
-  getSession, 
-  deleteSession, 
-  FairRandomGenerator, 
-  fisherYatesShuffle, 
-  generateFullDeck 
+import {
+  getSession,
+  deleteSession,
+  FairRandomGenerator,
+  fisherYatesShuffle,
+  generateFullDeck
 } from '@/lib/fair-random';
 import { lookupCard } from '@/lib/tarot';
+import { rateLimit } from '@/lib/rate-limit';
 
 const DrawRequestSchema = z.object({
-  sessionId: z.string().uuid('无效的会话ID'),
+  sessionId: z.string().min(1, '无效的会话ID').max(2048),
   positions: z.array(z.number().int().min(0).max(77))
     .min(1, '至少需要选择一张牌')
     .max(3, '最多只能选择三张牌')
 });
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, 'draw', 30, 60_000);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
-    
-    // 验证请求数据
+
     const validationResult = DrawRequestSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json(

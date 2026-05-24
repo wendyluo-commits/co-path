@@ -2,11 +2,23 @@ import OpenAI from 'openai';
 import { TarotReadingJSONSchema } from '@/schemas/reading.schema';
 import { NEW_SYSTEM_PROMPT, NEW_SYSTEM_PROMPT_EN } from '@/prompts/reading';
 
+const API_KEY = process.env.OPENAI_API_KEY;
+
+// 25s — leaves 5s headroom under the Vercel function maxDuration of 30s
+// so the route can still return a fallback instead of timing out at the edge.
+const REQUEST_TIMEOUT_MS = 25_000;
+
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
+  apiKey: API_KEY || 'dummy-key-for-build',
+  timeout: REQUEST_TIMEOUT_MS,
+  maxRetries: 0, // we handle retries ourselves in callOpenAI
 });
 
 export const MODEL_NAME = process.env.MODEL_NAME || 'gpt-4o-mini';
+
+function hasUsableKey(): boolean {
+  return !!API_KEY && API_KEY !== 'dummy-key-for-build';
+}
 
 async function callOpenAI(
   systemPrompt: string,
@@ -14,6 +26,12 @@ async function callOpenAI(
   maxRetries: number = 1
 ): Promise<{ success: true; data: any; usage: { input_tokens: number; output_tokens: number }; attempt: number }
          | { success: false; error: string; attempt: number }> {
+  // Short-circuit when no API key is configured. Otherwise the SDK still tries
+  // to dial out and burns ~60s of wall clock per request before failing.
+  if (!hasUsableKey()) {
+    return { success: false, error: 'OPENAI_API_KEY not configured', attempt: 0 };
+  }
+
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -64,11 +82,46 @@ async function callOpenAI(
   };
 }
 
+export interface FollowUpContext {
+  previousQuestion?: string;
+  previousSummary?: string;
+}
+
+function buildUserPrompt(
+  question: string,
+  cardContext: string,
+  lang: 'zh' | 'en',
+  followUp?: FollowUpContext
+): string {
+  if (lang === 'en') {
+    const parts = [`## User Question\n${question}`, `## Cards Drawn\n${cardContext}`];
+    if (followUp?.previousQuestion || followUp?.previousSummary) {
+      const ctxLines: string[] = ['## Follow-up Context'];
+      if (followUp.previousQuestion) ctxLines.push(`Previous question: ${followUp.previousQuestion}`);
+      if (followUp.previousSummary) ctxLines.push(`Summary of previous reading:\n${followUp.previousSummary}`);
+      ctxLines.push('Extend the reading using the same cards drawn; focus on the new question.');
+      parts.push(ctxLines.join('\n'));
+    }
+    return `Please provide a tarot reading based on the following:\n\n${parts.join('\n\n')}`;
+  }
+
+  const parts = [`## 用户问题\n${question}`, `## 抽到的牌\n${cardContext}`];
+  if (followUp?.previousQuestion || followUp?.previousSummary) {
+    const ctxLines: string[] = ['## 追问上下文'];
+    if (followUp.previousQuestion) ctxLines.push(`此前问题：${followUp.previousQuestion}`);
+    if (followUp.previousSummary) ctxLines.push(`上一轮解读摘要：\n${followUp.previousSummary}`);
+    ctxLines.push('请结合同一组已抽出的牌，针对新的追问给出延伸解读。');
+    parts.push(ctxLines.join('\n'));
+  }
+  return `请根据以下信息进行塔罗解读：\n\n${parts.join('\n\n')}`;
+}
+
 export async function generateTarotReadingWithAgent(
   question: string,
   cardContext: string,
   lang: 'zh' | 'en' = 'zh',
-  maxRetries: number = 1
+  maxRetries: number = 1,
+  followUp?: FollowUpContext
 ) {
   const systemPrompt = lang === 'en'
     ? `You are a warm and rigorous tarot reader. Combine traditional tarot wisdom with modern psychological insights. Use an understanding, supportive, and encouraging tone. Avoid fatalism — emphasize possibilities and choices.
@@ -78,26 +131,18 @@ For each card: write at least 2 sentences for interpretation (explaining the car
 
 每张牌的 interpretation 字段至少写 2 句话（结合问题背景解释牌义），advice 字段至少写 2 句具体可行的建议。overall 整体总结至少 3 句话。`;
 
-  const userPrompt = lang === 'en'
-    ? `Please provide a tarot reading based on the following:\n\n## User Question\n${question}\n\n## Cards Drawn\n${cardContext}`
-    : `请根据以下信息进行塔罗解读：\n\n## 用户问题\n${question}\n\n## 抽到的牌\n${cardContext}`;
-
-  return callOpenAI(systemPrompt, userPrompt, maxRetries);
+  return callOpenAI(systemPrompt, buildUserPrompt(question, cardContext, lang, followUp), maxRetries);
 }
 
 export async function generateNewTarotReading(
   question: string,
   cardContext: string,
   lang: 'zh' | 'en' = 'zh',
-  maxRetries: number = 1
+  maxRetries: number = 1,
+  followUp?: FollowUpContext
 ) {
   const systemPrompt = lang === 'en' ? NEW_SYSTEM_PROMPT_EN : NEW_SYSTEM_PROMPT;
-
-  const userPrompt = lang === 'en'
-    ? `Please provide a tarot reading based on the following:\n\n## User Question\n${question}\n\n## Cards Drawn\n${cardContext}`
-    : `请根据以下信息进行塔罗解读：\n\n## 用户问题\n${question}\n\n## 抽到的牌\n${cardContext}`;
-
-  return callOpenAI(systemPrompt, userPrompt, maxRetries);
+  return callOpenAI(systemPrompt, buildUserPrompt(question, cardContext, lang, followUp), maxRetries);
 }
 
 export async function generateTarotReading(
@@ -109,6 +154,7 @@ export async function generateTarotReading(
 }
 
 export async function checkOpenAIConnection(): Promise<boolean> {
+  if (!hasUsableKey()) return false;
   try {
     await openai.chat.completions.create({
       model: MODEL_NAME,

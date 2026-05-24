@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSession } from '@/lib/fair-random';
+import { rateLimit } from '@/lib/rate-limit';
 
 const SessionRequestSchema = z.object({
   spread: z.enum(['single', 'two-options', 'situation-action-outcome']).default('single'),
@@ -9,6 +10,9 @@ const SessionRequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, 'session', 30, 60_000);
+  if (limited) return limited;
+
   try {
     const body = await request.json().catch(() => ({}));
     
