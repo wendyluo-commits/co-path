@@ -168,22 +168,24 @@ function LoadingPageContent() {
         const response = await fetch('/api/reading', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            question: question || '我的塔罗牌问题', 
-            spread: spread || 'single', 
-            tone: 'gentle', 
-            lang: currentLanguage, 
-            seed: Math.floor(Math.random() * 1000000), 
+          body: JSON.stringify({
+            question: question || '我的塔罗牌问题',
+            spread: spread || 'single',
+            tone: 'gentle',
+            lang: currentLanguage,
+            seed: Math.floor(Math.random() * 1000000),
             cards,
-            useNewFormat: true  // 启用新的解读格式
+            useNewFormat: true,
           })
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
 
-        // Quota consumed only here — after a confirmed successful response
-        consumeQuota();
+        // Only consume quota for real Claude responses — fallbacks have no metadata field
+        if (result.metadata) {
+          consumeQuota();
+        }
 
         // 停止假进度定时器
         if (progressTimer) stopFakeProgress(progressTimer);

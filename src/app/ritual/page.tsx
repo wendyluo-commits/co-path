@@ -209,16 +209,6 @@ type ArcCard = {
   rotation: number; zIndex: number;
 };
 
-// Tinkerbell pixie-dust particle — all white stars
-type Particle = {
-  x: number; y: number;
-  vx: number; vy: number;
-  life: number;
-  size: number;
-  rotation: number;      // current star rotation angle
-  rotationSpeed: number; // spin per frame
-  phase: number;         // twinkle phase offset
-};
 
 // ─── Château du Tarot background elements ──────────────────────────────────────
 
@@ -329,105 +319,6 @@ function RitualPageContent() {
   const allDrawnRef        = useRef(false);
   const startReadingFnRef  = useRef<() => void>(() => {});
 
-  // ── particle system (Tinkerbell white stars) ────────────────────────────────
-  const particleCanvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef      = useRef<Particle[]>([]);
-  const emitRef = useRef({
-    trail: (_x: number, _y: number) => {},
-    spark: (_x: number, _y: number, _n?: number) => {},
-  });
-
-  useEffect(() => {
-    const canvas = particleCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Pixie-dust trail: white twinkling stars that drift and fall
-    emitRef.current.trail = (x, y) => {
-      if (particlesRef.current.length > 200) return;
-      for (let i = 0; i < 3; i++) {
-        particlesRef.current.push({
-          x: x + (Math.random() - 0.5) * 12,
-          y: y + (Math.random() - 0.5) * 12,
-          vx: (Math.random() - 0.5) * 2.2,
-          vy: -(Math.random() * 1.8 + 0.3),
-          life: 1,
-          size: Math.random() * 5 + 2,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.12,
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
-    };
-
-    // Burst: white stars explode outward
-    emitRef.current.spark = (x, y, n = 12) => {
-      for (let i = 0; i < n; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 7 + 2;
-        particlesRef.current.push({
-          x, y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 2.5,
-          life: 1,
-          size: Math.random() * 8 + 3,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.25,
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
-    };
-
-    // Draw a 4-pointed star (Tinkerbell shape)
-    const drawStar = (cx: number, cy: number, r: number, rot: number) => {
-      ctx.beginPath();
-      for (let i = 0; i < 8; i++) {
-        const a      = (i / 8) * Math.PI * 2 + rot;
-        const radius = i % 2 === 0 ? r : r * 0.28;
-        const px     = cx + Math.cos(a) * radius;
-        const py     = cy + Math.sin(a) * radius;
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fill();
-    };
-
-    let raf = 0;
-    const tick = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const now = performance.now();
-      particlesRef.current = particlesRef.current.filter(p => p.life > 0.01);
-
-      ctx.fillStyle   = 'white';
-      ctx.shadowColor = 'rgba(255,255,255,0.85)';
-
-      for (const p of particlesRef.current) {
-        p.x        += p.vx;
-        p.y        += p.vy;
-        p.vy       += 0.055;
-        p.vx       *= 0.98;
-        p.rotation += p.rotationSpeed;
-        p.life     -= 0.022;
-
-        const r         = Math.max(0.1, p.size * Math.sqrt(p.life));
-        const twinkle   = 0.65 + 0.35 * Math.sin(now * 0.006 + p.phase);
-        ctx.shadowBlur  = r * 2.5;
-        ctx.globalAlpha = Math.max(0, p.life) * twinkle;
-        drawStar(p.x, p.y, r, p.rotation);
-      }
-
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur  = 0;
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
-  }, []);
 
   // ── hand frame ──────────────────────────────────────────────────────────────
   const handFrameRef = useRef<{
@@ -592,7 +483,6 @@ function RitualPageContent() {
 
   // ── mouse card click ────────────────────────────────────────────────────────
   const handleCardClick = useCallback((cardId: number, ex: number, ey: number) => {
-    emitRef.current.spark(ex, ey, 20);
     if (isShufflingRef.current) return;
     if (awaitingFanRef.current) { completeFanSpread(); return; }
     if (!isShuffledRef.current) { shuffleCards(); return; }
@@ -686,26 +576,18 @@ function RitualPageContent() {
       else                    { if (dp <= PINCH_ON)  pinchLatch.current = true;  }
       const pinching = pinchLatch.current;
 
-      // Tinkerbell star cursor — GPU-composited via transform
+      // Simple ring cursor — GPU-composited via transform only
       const cEl = handCursorRef.current;
       if (cEl) {
         cEl.style.opacity   = '1';
-        // Center the 34px star on the fingertip; shrink when pinching
-        cEl.style.transform = `translate(${smx - 17}px,${smy - 17}px) scale(${pinching ? 0.55 : 1})`;
+        cEl.style.transform = `translate(${smx - 10}px,${smy - 10}px)`;
+        cEl.style.background = pinching ? 'rgba(255,255,255,0.85)' : 'transparent';
       }
-
-      // Tinkerbell pixie-dust trail
-      emitRef.current.trail(smx, smy);
 
       let handledByUI = false;
 
       // Reset one-shot guard when fingers fully open
       if (!pinching) startFiredRef.current = false;
-
-      // Spark burst on pinch start (rising edge only — visual feedback)
-      if (pinching && !wasPinchRef.current) {
-        emitRef.current.spark(smx, smy, 20);
-      }
 
       // Start reading: fire on any active pinch in the center zone (no button needed).
       // Zone = middle 80% width × middle 70% height of the screen.
@@ -727,23 +609,8 @@ function RitualPageContent() {
           const dEl = dragFloatRef.current;
           if (dEl) { dEl.style.left = `${rawX - 36}px`; dEl.style.top = `${rawY - 58}px`; }
 
-          // White sparkle trail from dragged card
-          if (particlesRef.current.length < 150) {
-            particlesRef.current.push({
-              x: rawX + (Math.random() - 0.5) * 18,
-              y: rawY + CARD_H / 2,
-              vx: (Math.random() - 0.5) * 2.5,
-              vy: -(Math.random() * 3 + 1),
-              life: 1, size: Math.random() * 4 + 2,
-              rotation: Math.random() * Math.PI * 2,
-              rotationSpeed: (Math.random() - 0.5) * 0.18,
-              phase: Math.random() * Math.PI * 2,
-            });
-          }
-
           // Release → drop into slot (try cursor pos first, fallback to next empty slot)
           if (!pinching && wasPinchRef.current) {
-            emitRef.current.spark(rawX, rawY, 16);
             const slotIdx = pickSlot(rawX, rawY) ?? nextEmpty();
             if (slotIdx !== null) placeCard(slotIdx);
             const drIdx = dragIdxRef.current;
@@ -778,7 +645,6 @@ function RitualPageContent() {
                 const spacing = (r.width - CARD_W) / (GESTURE_DECK_N - 1);
                 const cardCX = r.left + hi * spacing + CARD_W / 2;
                 const cardCY = r.top  + CARD_H / 2;
-                emitRef.current.spark(cardCX, cardCY, 12);
               }
               const newEl = deckCardRefs.current[hi];
               if (newEl) {
@@ -891,14 +757,6 @@ function RitualPageContent() {
           0%, 100% { box-shadow: 0 0 0 2px rgba(255,255,255,0.85), 0 8px 28px rgba(255,255,255,0.3); }
           50%       { box-shadow: 0 0 0 3px rgba(255,255,255,1),    0 12px 44px rgba(255,255,255,0.55), 0 0 0 8px rgba(255,255,255,0.12); }
         }
-        @keyframes tinkerbellSpin {
-          from { transform: rotate(0deg);   }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes tinkerbellPulse {
-          0%, 100% { opacity: 1;    filter: drop-shadow(0 0 5px rgba(255,255,255,1)) drop-shadow(0 0 12px rgba(255,255,255,0.6)); }
-          50%      { opacity: 0.75; filter: drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 20px rgba(255,255,255,0.85)); }
-        }
       `}</style>
       {/* Château du Tarot decorative layer */}
       <ChateauBackground />
@@ -931,33 +789,20 @@ function RitualPageContent() {
         )}
       </AnimatePresence>
 
-      {/* Particle canvas — above deck cards, below cursor */}
-      <canvas ref={particleCanvasRef} className="pointer-events-none fixed inset-0 z-[80]" aria-hidden />
-
       {/* Mode select overlay */}
       {interactionMode === null && <ModeSelectOverlay onSelect={setInteractionMode} language={lang} />}
 
       {/* Hidden camera */}
       <video ref={videoRef} className="pointer-events-none fixed left-0 top-0 h-px w-px opacity-0" playsInline muted aria-hidden />
 
-      {/* Tinkerbell star cursor */}
+      {/* Ring cursor — no animation, GPU-composited transform only */}
       {handControlEnabled && (
         <div
           ref={handCursorRef}
-          className="pointer-events-none fixed z-[90] opacity-0"
-          style={{ left: 0, top: 0, width: 34, height: 34, willChange: 'transform,opacity' }}
+          className="pointer-events-none fixed z-[90] opacity-0 rounded-full border-2 border-white/90"
+          style={{ left: 0, top: 0, width: 20, height: 20, willChange: 'transform,opacity,background' }}
           aria-hidden
-        >
-          <svg
-            width="34" height="34" viewBox="0 0 14 14" fill="none"
-            style={{ animation: 'tinkerbellSpin 3.5s linear infinite, tinkerbellPulse 2s ease-in-out infinite' }}
-          >
-            <path
-              d="M7 0.5 L7.7 5.3 L12.5 7 L7.7 8.7 L7 13.5 L6.3 8.7 L1.5 7 L6.3 5.3 Z"
-              fill="white"
-            />
-          </svg>
-        </div>
+        />
       )}
 
       {/* Floating card while dragging */}
@@ -1150,7 +995,6 @@ function RitualPageContent() {
                     if (!isShuffled || allDrawn) return;
                     e.currentTarget.style.transform  = 'scale(1.12)';
                     e.currentTarget.style.boxShadow  = '0 0 0 2px rgba(255,255,255,0.85), 0 8px 24px rgba(255,255,255,0.35)';
-                    emitRef.current.spark(e.clientX, e.clientY, 12);
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = '';

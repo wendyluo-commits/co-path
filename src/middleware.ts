@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEV_ONLY_ROUTES = ['/debug', '/test-api', '/test-images', '/test-pt'];
+const DEV_ONLY_ROUTES = ['/debug', '/test-api', '/test-images', '/test-pt', '/reset-quota'];
 
 export function middleware(request: NextRequest) {
   if (process.env.NODE_ENV !== 'development') {
     const { pathname } = request.nextUrl;
     if (DEV_ONLY_ROUTES.some(route => pathname.startsWith(route))) {
-      return NextResponse.notFound();
+      return new NextResponse(null, { status: 404 });
     }
   }
   return NextResponse.next();

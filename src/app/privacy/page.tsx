@@ -102,10 +102,10 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">4. 第三方服务</h2>
               <div className="space-y-4 mb-6">
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h3 className="font-medium text-yellow-800 mb-2">OpenAI API</h3>
+                  <h3 className="font-medium text-yellow-800 mb-2">Anthropic Claude API</h3>
                   <p className="text-yellow-700 text-sm">
-                    我们使用 OpenAI 的 API 来生成塔罗解读。您的问题会被发送到 OpenAI 进行处理，但不会被 OpenAI 用于训练模型。
-                    请查看 <a href="https://openai.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">OpenAI 隐私政策</a> 了解更多信息。
+                    我们使用 Anthropic 的 Claude API 来生成塔罗解读。您的问题会被发送到 Anthropic 进行处理，但不会被用于训练模型。
+                    请查看 <a href="https://www.anthropic.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">Anthropic 隐私政策</a> 了解更多信息。
                   </p>
                 </div>
                 

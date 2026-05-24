@@ -26,8 +26,8 @@ export const CardSchema = z.object({
   position: z.string().optional(),
   orientation: z.enum(["upright", "reversed"]),
   keywords: z.array(z.string()),
-  interpretation: z.string().min(40, "解释内容太短"),
-  advice: z.string().min(30, "建议内容太短")
+  interpretation: z.string().min(1),
+  advice: z.string().min(1)
 });
 
 // 塔罗解读结果 Schema
@@ -35,8 +35,8 @@ export const TarotReadingSchema = z.object({
   spread: z.enum(["single", "situation-action-outcome", "five-card"]),
   question: z.string(),
   cards: z.array(CardSchema).min(1, "至少需要一张牌"),
-  overall: z.string().min(60, "整体总结太短"),
-  action_steps: z.array(z.string()).min(3, "至少需要3个行动步骤").max(6, "行动步骤不能超过6个"),
+  overall: z.string().min(1),
+  action_steps: z.array(z.string()).min(1).max(6),
   safety_note: z.string(),
   tone: z.enum(["gentle", "direct"])
 });
@@ -89,8 +89,8 @@ export const MixedTarotReadingSchema = z.object({
   }),
   
   // 保留原有的其他字段
-  overall: z.string().min(60, "整体总结太短"),
-  action_steps: z.array(z.string()).min(3, "至少需要3个行动步骤").max(6, "行动步骤不能超过6个"),
+  overall: z.string().min(1),
+  action_steps: z.array(z.string()).min(1).max(6),
   safety_note: z.string()
 });
 
