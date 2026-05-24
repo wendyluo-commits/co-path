@@ -11,26 +11,21 @@ export default function BottomNav() {
       id: 'reading',
       label: 'Read',
       path: '/',
-      iconOff: '/%E8%A7%A3%E8%AF%BB_off.png',
-      iconOn: '/%E8%A7%A3%E8%AF%BB_on.png',
+      iconOff: '/read_off.png',
+      iconOn: '/read_on.png',
     },
   ];
 
   const isActive = (path: string) => {
     if (path === '/') {
-      // 首页及其相关页面都算激活（/ 经 rewrite 会显示为 /home）
-      return pathname === '/' ||
-             pathname === '/home' ||
-             pathname.startsWith('/start') || 
-             pathname.startsWith('/ritual') ||
-             pathname.startsWith('/canvas') ||
-             pathname.startsWith('/draw') || 
-             pathname.startsWith('/reading') ||
-             pathname.startsWith('/daily') ||
-             pathname.startsWith('/coins') ||
-             pathname.startsWith('/cup') ||
-             pathname.startsWith('/sword') ||
-             pathname.startsWith('/wand');
+      // Home + every screen that's part of the reading flow.
+      return (
+        pathname === '/' ||
+        pathname === '/home' ||
+        pathname.startsWith('/start') ||
+        pathname.startsWith('/canvas') ||
+        pathname.startsWith('/reading')
+      );
     }
     return pathname.startsWith(path);
   };

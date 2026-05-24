@@ -45,7 +45,7 @@ function FlowChevron({ index }: { index: number }) {
   );
 }
 
-export function ScrollHint({ className = '', timeout = 8000 }: ScrollHintProps) {
+export function ScrollHint({ className = '' }: ScrollHintProps) {
   const [visible, setVisible] = useState(true);
   const sentinelRef = useRef<HTMLSpanElement>(null);
 

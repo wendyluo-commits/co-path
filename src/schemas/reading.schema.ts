@@ -15,7 +15,13 @@ export const ReadingRequestSchema = z.object({
     orientation: z.enum(["upright", "reversed"]),
     position: z.string(),
     keywords: z.array(z.string()).optional()
-  })).optional()
+  })).optional(),
+  // 追问场景：上一轮 reading 的上下文。server 端会单独清洗后拼进 user prompt，
+  // 不和 `question` 混合，这样 question 的 500 字符限制不被追问膨胀破坏。
+  followUpContext: z.object({
+    previousQuestion: z.string().max(500).optional(),
+    previousSummary: z.string().max(1000).optional(),
+  }).optional(),
 });
 
 // 卡牌 Schema

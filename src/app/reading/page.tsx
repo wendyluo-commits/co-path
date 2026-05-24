@@ -13,6 +13,7 @@ import { CardDetailOverlay } from '@/components/CardDetailOverlay';
 import { saveReadingToHistory } from '@/lib/history';
 import { ScrollHint } from '@/components/ScrollHint';
 import { FeedbackOverlay } from '@/components/FeedbackOverlay';
+import { hasSubmittedFeedback, readingId } from '@/lib/feedback-storage';
 
 function ReadingPageContent() {
   const router = useRouter();
@@ -388,27 +389,13 @@ function ReadingPageContent() {
     sessionStorage.setItem('drawResult', JSON.stringify({ spread: spreadVal, cards }));
   };
 
-  const buildFollowUpPrompt = (
-    followUp: string,
-    r: TarotReading | MixedTarotReading,
-    lang: 'zh' | 'en',
-    urlQuestion: string
-  ): string => {
-    const orig = r.question || urlQuestion || '';
-    let summary = '';
-    if (isNewFormat(r)) {
-      summary = r.overall || r.keyMessages?.body || '';
-    } else {
-      summary = (r as TarotReading).overall || '';
-    }
-    const truncated = summary.length > 600 ? summary.slice(0, 600) + '…' : summary;
-    if (lang === 'en') {
-      return `Follow-up question: ${followUp}\n\nPrevious question: ${orig}\n\nSummary of the previous reading:\n${truncated}\n\nPlease extend the reading using the same cards drawn, focusing on the follow-up.`;
-    }
-    return `【追问】${followUp}\n\n【原问题】${orig}\n\n【上一轮解读摘要】\n${truncated}\n\n请结合同一组已抽出的牌，针对追问给出延伸解读。`;
+  /** Pull a usable summary from either reading format. */
+  const extractSummary = (r: TarotReading | MixedTarotReading): string => {
+    if (isNewFormat(r)) return r.overall || r.keyMessages?.body || '';
+    return (r as TarotReading).overall || '';
   };
 
-  /** 重新抽牌流程：预填到 /start 输入框的文案（单行尽量可读） */
+  /** Single-line prefill shown back to the user on /canvas when they redraw. */
   const buildRedrawPrefillQuestion = (
     followUp: string,
     r: TarotReading | MixedTarotReading,
@@ -418,9 +405,7 @@ function ReadingPageContent() {
     const orig = (r.question || urlQuestion || '').trim();
     const short = orig.length > 100 ? `${orig.slice(0, 100)}…` : orig;
     if (lang === 'en') {
-      return short
-        ? `Follow-up: ${followUp} | Earlier question: ${short}`
-        : `Follow-up: ${followUp}`;
+      return short ? `Follow-up: ${followUp} | Earlier question: ${short}` : `Follow-up: ${followUp}`;
     }
     return short ? `【追问】${followUp} ｜【此前】${short}` : `【追问】${followUp}`;
   };
@@ -436,6 +421,7 @@ function ReadingPageContent() {
       const prefill = buildRedrawPrefillQuestion(trimmed, reading, language, question);
       try {
         sessionStorage.removeItem('drawResult');
+        sessionStorage.removeItem('followUpContext');
       } catch {
         /* ignore */
       }
@@ -443,18 +429,35 @@ function ReadingPageContent() {
       const ritualParams = new URLSearchParams({
         spread: reading.spread,
         question: prefill,
-        autoshuffle: '1'
+        autoshuffle: '1',
+        lang: language,
       });
       router.push(`/canvas?${ritualParams.toString()}`);
       return;
     }
 
+    // Same-cards mode: stash the prior context in sessionStorage instead of
+    // stuffing it into the URL. The /loading page reads it and forwards to the
+    // API as `followUpContext`, which the API sanitizes separately.
     ensureDrawResultFromReading(reading);
-    const combined = buildFollowUpPrompt(trimmed, reading, language, question);
+    const previousSummary = extractSummary(reading);
+    try {
+      sessionStorage.setItem(
+        'followUpContext',
+        JSON.stringify({
+          previousQuestion: reading.question || question || '',
+          previousSummary,
+        })
+      );
+    } catch {
+      /* ignore — best effort */
+    }
     const params = new URLSearchParams({
       fromRitual: 'true',
       spread: reading.spread,
-      question: combined,
+      question: trimmed,
+      lang: language,
+      followUp: '1',
     });
     router.push(`/loading?${params.toString()}`);
   };
@@ -929,7 +932,15 @@ function ReadingPageContent() {
               <button
                 type="button"
                 className="w-full sm:w-1/2 mx-auto bg-black text-white border border-white/70 rounded-full py-3 text-[13px] font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/30"
-                onClick={() => setShowFeedback(true)}
+                onClick={() => {
+                  // Skip the overlay if the user already rated this reading.
+                  const rid = readingId(reading);
+                  if (rid && hasSubmittedFeedback(rid)) {
+                    router.push('/');
+                  } else {
+                    setShowFeedback(true);
+                  }
+                }}
               >
                 {language === 'zh' ? '结束解读' : 'End Reading'}
               </button>
@@ -953,10 +964,11 @@ function ReadingPageContent() {
       </main>
 
       {/* Feedback overlay — shown on "结束解读", navigates home after done */}
-      {showFeedback && (
+      {showFeedback && reading && (
         <FeedbackOverlay
           spread={spread}
           language={language}
+          readingId={readingId(reading)}
           onDone={() => router.push('/')}
         />
       )}

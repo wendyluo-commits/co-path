@@ -3,8 +3,14 @@ import { ReadingRequestSchema, TarotReadingSchema, MixedTarotReadingSchema } fro
 import { drawCards, composeContext, lookupCard } from '@/lib/tarot';
 import { generateTarotReadingWithAgent, generateNewTarotReading } from '@/lib/openai';
 import { detectSensitiveContent } from '@/prompts/reading';
+import { rateLimit } from '@/lib/rate-limit';
+import { sanitizeForPrompt, sanitizeQuestion } from '@/lib/sanitize';
 
 export async function POST(request: NextRequest) {
+  // /api/reading is the expensive one — tight per-IP cap.
+  const limited = rateLimit(request, 'reading', 5, 60_000) ?? rateLimit(request, 'reading-hour', 30, 60 * 60_000);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
 
@@ -16,7 +22,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { question, spread, seed, tone, lang, cards: preselectedCards } = validationResult.data;
+    const {
+      question: rawQuestion,
+      spread,
+      seed,
+      tone,
+      lang,
+      cards: preselectedCards,
+      followUpContext: rawFollowUp,
+    } = validationResult.data;
+    const question = sanitizeQuestion(rawQuestion);
+
+    const followUpContext = rawFollowUp
+      ? {
+          previousQuestion: rawFollowUp.previousQuestion
+            ? sanitizeForPrompt(rawFollowUp.previousQuestion, 500)
+            : undefined,
+          previousSummary: rawFollowUp.previousSummary
+            ? sanitizeForPrompt(rawFollowUp.previousSummary, 1000)
+            : undefined,
+        }
+      : undefined;
 
     const useNewFormat = body.useNewFormat === true;
 
@@ -48,15 +74,15 @@ export async function POST(request: NextRequest) {
     const cardContext = composeContext(drawnCards, question, tone);
 
     const result = useNewFormat
-      ? await generateNewTarotReading(question, cardContext, lang)
-      : await generateTarotReadingWithAgent(question, cardContext, lang);
+      ? await generateNewTarotReading(question, cardContext, lang, 1, followUpContext)
+      : await generateTarotReadingWithAgent(question, cardContext, lang, 1, followUpContext);
 
     if (!result.success) {
       console.error('OpenAI API failed:', result.error);
       const fallbackReading = useNewFormat
         ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
         : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
-      return NextResponse.json(fallbackReading, { status: 200 });
+      return NextResponse.json({ ...fallbackReading, ai_generated: false }, { status: 200 });
     }
 
     const expectedCount = drawnCards.length;
@@ -70,7 +96,7 @@ export async function POST(request: NextRequest) {
         const fallbackReading = useNewFormat
           ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
           : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
-        return NextResponse.json(fallbackReading, { status: 200 });
+        return NextResponse.json({ ...fallbackReading, ai_generated: false }, { status: 200 });
       }
     }
 
@@ -93,11 +119,12 @@ export async function POST(request: NextRequest) {
       const fallbackReading = useNewFormat
         ? createMixedFormatFallbackReading(question, spread, drawnCards, tone, safetyNote, lang)
         : createFallbackReading(question, spread, drawnCards, tone, safetyNote, lang);
-      return NextResponse.json(fallbackReading, { status: 200 });
+      return NextResponse.json({ ...fallbackReading, ai_generated: false }, { status: 200 });
     }
 
     const response = {
       ...readingValidation.data,
+      ai_generated: true,
       metadata: {
         model_used: process.env.MODEL_NAME || 'gpt-4o-mini',
         tokens_used: result.usage ? result.usage.input_tokens + result.usage.output_tokens : 0,
@@ -303,6 +330,3 @@ function createFallbackReading(
   };
 }
 
-export async function GET() {
-  return NextResponse.json({ status: 'healthy', timestamp: new Date().toISOString() });
-}
